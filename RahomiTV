@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rahomi TV | البث المباشر المحمي</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght@700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <style>
+    /* ------------------------------------- */
+    /* الأساسيات والتوافقية (Responsive & Base) */
+    /* ------------------------------------- */
+    body {
+      background: #020617;
+      font-family: 'Cairo', sans-serif;
+      min-height: 100vh;
+      color: #f8fafc;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .title-font { font-family: 'Changa', sans-serif; }
+    .glass {
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.2);
+    }
+    
+    /* ستايلات صفحة تسجيل الدخول */
+    .login-card {
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(148,163,184,0.2);
+    }
+    input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56,189,248,0.5);
+    }
+    
+    /* تأثيرات البطاقة النشطة */
+    .channel-card-clickable { transition: all 0.25s ease; cursor: pointer; }
+    .channel-card-clickable:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(56,189,248,0.3); border-color: rgba(56,189,248,0.5); }
+    .channel-card-active {
+      box-shadow: 0 0 20px rgba(56,189,248,0.6);
+      background: radial-gradient(circle at 0% 0%, rgba(56,189,248,0.15), rgba(15,23,42,0.92));
+      border-color: #38bdf8;
+    }
+    
+    /* المشغل */
+    #playerContainer { position: relative; }
+    #videoPlayer { min-height: 250px; }
+  </style>
+</head>
+
+<body class="text-slate-100">
+
+  <script>
+    // 1. منع استخدام مفاتيح فحص العناصر والمطورين (F12, Ctrl+Shift+I, إلخ)
+    document.onkeydown = function(e) {
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+        return false;
+      }
+    };
+    // 2. منع النقر بالزر الأيمن للموس ومنع تحديد ونسخ النص
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('selectstart', event => event.preventDefault()); 
+  </script>
+
+  <div id="loginPage" class="hidden w-full h-screen fixed top-0 left-0 z-50 flex items-center justify-center backdrop-blur-sm bg-gray-900/80">
+      <div class="login-card rounded-2xl p-6 md:p-8 shadow-2xl max-w-sm w-full space-y-6">
+        <h1 class="text-3xl font-bold text-center text-sky-400">
+          Rahomi TV
+        </h1>
+        <p class="text-center text-slate-400 text-sm font-semibold">
+          الرجاء إدخال رمز المرور للوصول إلى البث.
+        </p>
+
+        <div class="space-y-4">
+          <input 
+            type="password"
+            id="passCodeInput"
+            class="w-full px-4 py-3 text-lg text-center bg-slate-800 border-2 border-slate-700 rounded-lg focus:outline-none transition text-slate-100"
+            placeholder="أدخل رمز المرور" 
+            maxlength="4"
+            onkeyup="if(this.value.length === 4) checkCode();"
+          >
+          <button
+            id="loginBtn"
+            onclick="checkCode()"
+            class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition duration-300"
+          >
+            دخول
+          </button>
+          <p id="message" class="text-center text-sm text-red-400 h-5"></p>
+        </div>
+      </div>
+  </div>
+
+  <main id="channelsContent" class="hidden max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8 w-full">
+
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+
+      <section class="xl:col-span-3 space-y-5 order-1 xl:order-none">
+
+        <div class="glass rounded-2xl p-4 md:p-6 shadow-2xl">
+          <div class="flex items-center gap-3 mb-4">
+            <h1 class="title-font text-2xl font-bold text-sky-200">
+              Rahomi TV
+            </h1>
+          </div>
+
+          <div
+            id="playerContainer"
+            class="relative w-full aspect-video rounded-xl bg-black border border-slate-800 shadow-inner flex items-center justify-center text-slate-400">
+
+            <div class="flex flex-col items-center gap-3 px-4 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="12" cy="12" r="9" stroke-width="1.4"></circle>
+                  <path d="M10 9.5v5l4-2.5-4-2.5z" fill="currentColor" stroke-width="0.6" stroke="none"></path>
+              </svg>
+              <div class="space-y-1">
+                <p class="font-semibold text-slate-100">
+                  اضغط على اسم القناة لبدء المشاهدة.
+                </p>
+                <p class="text-sm text-slate-400">
+                  القناة الحالية: <span id="currentChannelLabel" class="font-semibold text-sky-300">لم يتم الاختيار</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="space-y-6 xl:col-span-1 order-2 xl:order-none">
+
+        <div class="glass rounded-2xl p-4 md:p-5 shadow-xl">
+          <h2 class="title-font text-xl font-bold text-sky-200 mb-4">
+            القنوات المتاحة
+          </h2>
+
+          <div class="flex flex-col gap-3" id="channelList">
+            
+            <div 
+              onclick="playChannel(1, 'https://stream.supertv.gg:3001/supertv/sport/stv1/ch1/adaptive.m3u8', 'الرياضية 1')"
+              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="1">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-sky-500/20 flex items-center justify-center border border-sky-400/50">
+                    <span class="text-lg font-bold">1</span>
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                  <span class="font-semibold text-base text-slate-50 truncate">الرياضية 1</span>
+                </div>
+              </div>
+            </div>
+
+            <div 
+              onclick="playChannel(2, 'https://stream.supertv.gg:3002/supertv/sport/stv2/ch2/adaptive.m3u8', 'الرياضية 2')"
+              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="2">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center border border-red-400/50">
+                        <span class="text-lg font-bold">2</span>
+                    </div>
+                    <div class="flex flex-col flex-1 min-w-0">
+                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 2</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div 
+               onclick="playChannel(3, 'https://stream.supertv.gg:3003/supertv/sport/stv3/ch3/adaptive.m3u8', 'الرياضية 3')"
+               class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-400/50">
+                        <span class="text-lg font-bold">3</span>
+                    </div>
+                    <div class="flex flex-col flex-1 min-w-0">
+                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 3</span>
+                    </div>
+                </div>
+            </div>
+
+            <div 
+              onclick="playChannel(4, 'https://stream.supertv.gg:3004/supertv/sport/stv4/ch4/adaptive.m3u8', 'الرياضية 4')"
+              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center border border-yellow-400/50">
+                        <span class="text-lg font-bold">4</span>
+                    </div>
+                    <div class="flex flex-col flex-1 min-w-0">
+                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 4</span>
+                    </div>
+                </div>
+            </div>
+
+             <div 
+              onclick="playChannel(5, 'https://stream.supertv.gg:3005/supertv/sport/stv5/ch5/adaptive.m3u8', 'الرياضية 5')"
+              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center border border-purple-400/50">
+                        <span class="text-lg font-bold">5</span>
+                    </div>
+                    <div class="flex flex-col flex-1 min-w-0">
+                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 5</span>
+                    </div>
+                </div>
+            </div>
+
+            <div 
+              onclick="playChannel(6, 'https://stream.supertv.gg:3006/supertv/sport/stv6/ch6/adaptive.m3u8', 'الرياضية 6')"
+              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-pink-500/20 flex items-center justify-center border border-pink-400/50">
+                        <span class="text-lg font-bold">6</span>
+                    </div>
+                    <div class="flex flex-col flex-1 min-w-0">
+                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 6</span>
+                    </div>
+                </div>
+            </div>
+
+            <div 
+              onclick="playChannel(7, 'https://stream.supertv.gg:3007/supertv/sport/stv7/ch7/adaptive.m3u8', 'الرياضية 7')"
+              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="7">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center border border-orange-400/50">
+                        <span class="text-lg font-bold">7</span>
+                    </div>
+                    <div class="flex flex-col flex-1 min-w-0">
+                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 7</span>
+                    </div>
+                </div>
+            </div>
+
+          </div>
+        </div>
+        
+        <div class="glass rounded-2xl p-4 md:p-5 shadow-xl border-sky-400/50">
+             <div class="flex flex-col items-center justify-center gap-3">
+                <a href="https://t.me/RahomiTV" target="_blank" class="w-full">
+                    <button class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/50">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                           <path d="M9.197 16.59L9 20.25c.36 0 .518-.155.706-.341l1.692-1.647 3.507 2.565c.643.354 1.097.168 1.266-.596l2.295-10.785c.234-.944-.34-1.314-.964-1.085L3.77 11.01c-.93.36-.916.879-.158 1.113l3.94 1.227 9.146-5.77c.43-.262.825-.117.501.144"></path>
+                         </svg>
+                        حمل تطبيقنا على أجهزة الأندرويد
+                    </button>
+                </a>
+                
+                <button onclick="shareSite()" class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-semibold bg-sky-600/30 hover:bg-sky-600/50 transition">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    شارك الموقع لتعم الفائدة
+                </button>
+            </div>
+        </div>
+
+      </aside>
+    </div>
+  </main>
+
+  <script>
+  let currentHls = null;
+  const CORRECT_CODE = "1212";
+  let isLoggedIn = false;
+  
+  /**
+   * 🛑 وظيفة جلب الرابط الأصلي 🛑
+   */
+  function getOriginalLink(link) {
+    if (link.includes('ضع هنا رابط البث الأصلي')) {
+        return 'INVALID_LINK';
+    }
+    return link;
+  }
+
+  // --------------------------------------------------------
+  // وظائف التحكم بالدخول
+  // --------------------------------------------------------
+  
+  function checkCode() {
+    const input = document.getElementById("passCodeInput").value;
+    const message = document.getElementById("message");
+
+    if (input === CORRECT_CODE) {
+      isLoggedIn = true; 
+      togglePages(true);
+    } else {
+      message.textContent = "رمز المرور غير صحيح.";
+      document.getElementById("passCodeInput").value = "";
+    }
+  }
+
+  function togglePages(status) {
+      const loginPage = document.getElementById("loginPage");
+      const channelsContent = document.getElementById("channelsContent");
+      
+      if (status) {
+          loginPage.classList.add("hidden");
+          channelsContent.classList.remove("hidden");
+          document.body.style.justifyContent = 'flex-start';
+      } else {
+          loginPage.classList.remove("hidden");
+          channelsContent.classList.add("hidden");
+          document.body.style.justifyContent = 'center';
+      }
+  }
+  
+  // تحقق عند تحميل الصفحة
+  window.onload = function() {
+      togglePages(isLoggedIn); 
+  };
+
+  // --------------------------------------------------------
+  // وظائف التشغيل (مدعمة للتوافقية الشاملة)
+  // --------------------------------------------------------
+
+  /**
+   * تشغيل قناة البث المباشر. يستخدم HLS.js للأندرويد والكروم/فايرفوكس، والمشغل الأصلي للآيفون (iOS).
+   */
+  function playChannel(id, m3u8Url, name) {
+    if (!isLoggedIn) {
+      alert("الرجاء إدخال رمز المرور أولاً.");
+      return;
+    }
+    
+    const originalUrl = getOriginalLink(m3u8Url); 
+    
+    const playerContainer = document.getElementById("playerContainer");
+    const channelLabel = document.getElementById("currentChannelLabel");
+    
+    if (originalUrl === 'INVALID_LINK') {
+        alert('يرجى وضع رابط بث حقيقي للقناة رقم ' + id + ' أولاً.');
+        return;
+    }
+
+    if (currentHls) {
+        currentHls.destroy();
+        currentHls = null;
+    }
+
+    playerContainer.innerHTML = `
+      <video id="videoPlayer" class="w-full h-full rounded-xl border-0" controls autoplay playsinline></video>
+    `;
+    const video = document.getElementById('videoPlayer');
+
+    // 2. محرك التشغيل المتوافق مع كل الأجهزة
+    // ** هذا الجزء يضمن التوافق مع الآيفون (Native HLS) وبقية الأجهزة (HLS.js) **
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // ** المسار الأمثل لأجهزة iOS (آيفون، آيباد، سفاري) **
+      // مشغلات آبل الأصلية تدعم HLS والجودة التلقائية بشكل ممتاز.
+      video.src = originalUrl;
+      video.addEventListener('loadedmetadata', function() {
+        video.play().catch(e => console.log('Autoplay blocked on iOS:', e));
+      });
+    } else if (Hls.isSupported()) {
+      // ** المسار الأمثل لأجهزة أندرويد والكمبيوتر (باستخدام HLS.js) **
+      var hls = new Hls();
+      currentHls = hls; 
+      // HLS.js يتولى اختيار الجودة التلقائية
+      hls.loadSource(originalUrl);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.play().catch(e => console.log('Autoplay blocked:', e));
+      });
+    } else {
+        playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، متصفحك لا يدعم تشغيل هذا النوع من البث المباشر (HLS).</div>`;
+    }
+
+    // 3. تحديث واجهة المستخدم
+    if (channelLabel) {
+      channelLabel.textContent = name;
+    }
+    
+    const allChannelCards = document.querySelectorAll('.channel-card-clickable');
+    allChannelCards.forEach(card => card.classList.remove('channel-card-active'));
+    
+    const clickedCard = Array.from(allChannelCards).find(card => card.dataset.id == id);
+    if(clickedCard) {
+        clickedCard.classList.add('channel-card-active');
+    }
+  }
+  
+  /**
+   * دالة لمشاركة الموقع
+   */
+  function shareSite() {
+      const shareData = {
+          title: 'Rahomi TV - بث مباشر عالي الجودة',
+          text: 'شاهد القنوات الرياضية والترفيهية. (الكود هو 1212).',
+          url: window.location.href
+      };
+
+      if (navigator.share) {
+          navigator.share(shareData).catch(error => console.log('Error sharing', error));
+      } else {
+          navigator.clipboard.writeText(shareData.url).then(() => {
+             alert(`تم نسخ رابط الموقع بنجاح! شاركه لتعم الفائدة: ${shareData.url}`);
+          });
+      }
+  }
+</script>
+
+</body>
+</html>
