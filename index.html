@@ -112,7 +112,7 @@
       </div>
   </div>
 
-  <main id="channelsContent" class="hidden max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8 w-full">
+  <main id="channelsContent" class="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8 w-full">
 
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
@@ -286,8 +286,10 @@
 
   <script>
   let currentHls = null;
-  const CORRECT_CODE = "1212";
-  let isLoggedIn = false;
+  // تم إبقاء هذا المتغير ولكن لن يتم استخدامه للتحقق
+  const CORRECT_CODE = "1212"; 
+  // ⭐️ تغيير مهم: تعيين حالة تسجيل الدخول إلى true بشكل دائم
+  let isLoggedIn = true; 
   
   /**
    * 🛑 وظيفة جلب الرابط الأصلي 🛑
@@ -300,26 +302,16 @@
   }
 
   // --------------------------------------------------------
-  // وظائف التحكم بالدخول
+  // وظائف التحكم بالدخول (تم تبسيطها)
   // --------------------------------------------------------
   
-  function checkCode() {
-    const input = document.getElementById("passCodeInput").value;
-    const message = document.getElementById("message");
-
-    if (input === CORRECT_CODE) {
-      isLoggedIn = true; 
-      togglePages(true);
-    } else {
-      message.textContent = "رمز المرور غير صحيح.";
-      document.getElementById("passCodeInput").value = "";
-    }
-  }
-
+  // ❌ تم إزالة دالة checkCode()
+  
   function togglePages(status) {
       const loginPage = document.getElementById("loginPage");
       const channelsContent = document.getElementById("channelsContent");
       
+      // بسبب أن status ستكون true دائماً الآن
       if (status) {
           loginPage.classList.add("hidden");
           channelsContent.classList.remove("hidden");
@@ -331,23 +323,20 @@
       }
   }
   
-  // تحقق عند تحميل الصفحة
+  // ⭐️ تغيير مهم: عند تحميل الصفحة، يتم إظهار المحتوى مباشرة
   window.onload = function() {
-      togglePages(isLoggedIn); 
+      togglePages(true); // يتم تمرير true دائماً
   };
 
   // --------------------------------------------------------
-  // وظائف التشغيل (مدعمة للتوافقية الشاملة)
+  // وظائف التشغيل (تم تعديلها)
   // --------------------------------------------------------
 
   /**
    * تشغيل قناة البث المباشر. يستخدم HLS.js للأندرويد والكروم/فايرفوكس، والمشغل الأصلي للآيفون (iOS).
    */
   function playChannel(id, m3u8Url, name) {
-    if (!isLoggedIn) {
-      alert("الرجاء إدخال رمز المرور أولاً.");
-      return;
-    }
+    // ❌ تم إزالة شرط: if (!isLoggedIn) { ... }
     
     const originalUrl = getOriginalLink(m3u8Url); 
     
