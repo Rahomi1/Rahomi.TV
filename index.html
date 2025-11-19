@@ -53,7 +53,18 @@
     
     /* المشغل */
     #playerContainer { position: relative; }
-    #videoPlayer { min-height: 250px; }
+    /* تم إرجاع الإعدادات الأصلية: إزالة object-fit: cover; */
+    #videoPlayer { min-height: 250px; } 
+    
+    /* ستايل مخصص لتوسيط العنوان بعد إزالة اللوجو */
+    .player-header {
+        display: flex; /* تغيير من grid إلى flex */
+        justify-content: center; /* توسيط المحتوى */
+        align-items: center;
+        text-align: center;
+    }
+    .player-title { /* لم يعد بحاجة لـ grid-column */ }
+
   </style>
 </head>
 
@@ -108,12 +119,12 @@
       <section class="xl:col-span-3 space-y-5 order-1 xl:order-none">
 
         <div class="glass rounded-2xl p-4 md:p-6 shadow-2xl">
-          <div class="flex items-center gap-3 mb-4">
-            <h1 class="title-font text-2xl font-bold text-sky-200">
-              Rahomi TV
-            </h1>
+          
+          <div class="player-header mb-4">
+              <h1 class="player-title title-font text-2xl font-bold text-sky-200">
+                Rahomi TV
+              </h1>
           </div>
-
           <div
             id="playerContainer"
             class="relative w-full aspect-video rounded-xl bg-black border border-slate-800 shadow-inner flex items-center justify-center text-slate-400">
@@ -353,25 +364,23 @@
         currentHls = null;
     }
 
+    // تم إزالة object-cover ليعرض الفيديو بنسبة أبعاده الأصلية (قد يعيد الشريط الأسود)
     playerContainer.innerHTML = `
       <video id="videoPlayer" class="w-full h-full rounded-xl border-0" controls autoplay playsinline></video>
     `;
     const video = document.getElementById('videoPlayer');
 
     // 2. محرك التشغيل المتوافق مع كل الأجهزة
-    // ** هذا الجزء يضمن التوافق مع الآيفون (Native HLS) وبقية الأجهزة (HLS.js) **
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // ** المسار الأمثل لأجهزة iOS (آيفون، آيباد، سفاري) **
-      // مشغلات آبل الأصلية تدعم HLS والجودة التلقائية بشكل ممتاز.
+      // المسار الأمثل لأجهزة iOS
       video.src = originalUrl;
       video.addEventListener('loadedmetadata', function() {
         video.play().catch(e => console.log('Autoplay blocked on iOS:', e));
       });
     } else if (Hls.isSupported()) {
-      // ** المسار الأمثل لأجهزة أندرويد والكمبيوتر (باستخدام HLS.js) **
+      // المسار الأمثل لأجهزة أندرويد والكمبيوتر (باستخدام HLS.js)
       var hls = new Hls();
       currentHls = hls; 
-      // HLS.js يتولى اختيار الجودة التلقائية
       hls.loadSource(originalUrl);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
