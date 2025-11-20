@@ -12,9 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <style>
-    /* ------------------------------------- */
-    /* الأساسيات والتوافقية (Responsive & Base) */
-    /* ------------------------------------- */
+    /* ... (CSS Styles remain the same) ... */
     body {
       background: #020617;
       font-family: 'Cairo', sans-serif;
@@ -31,8 +29,6 @@
       background: rgba(15,23,42,0.9);
       border: 1px solid rgba(148,163,184,0.2);
     }
-    
-    /* ستايلات صفحة تسجيل الدخول */
     .login-card {
       background: rgba(15,23,42,0.95);
       border: 1px solid rgba(148,163,184,0.2);
@@ -41,8 +37,6 @@
       border-color: #38bdf8;
       box-shadow: 0 0 0 3px rgba(56,189,248,0.5);
     }
-    
-    /* تأثيرات البطاقة النشطة */
     .channel-card-clickable { transition: all 0.25s ease; cursor: pointer; }
     .channel-card-clickable:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(56,189,248,0.3); border-color: rgba(56,189,248,0.5); }
     .channel-card-active {
@@ -50,20 +44,14 @@
       background: radial-gradient(circle at 0% 0%, rgba(56,189,248,0.15), rgba(15,23,42,0.92));
       border-color: #38bdf8;
     }
-    
-    /* المشغل */
     #playerContainer { position: relative; }
-    /* تم إرجاع الإعدادات الأصلية: إزالة object-fit: cover; */
     #videoPlayer { min-height: 250px; } 
-    
-    /* ستايل مخصص لتوسيط العنوان بعد إزالة اللوجو */
     .player-header {
-        display: flex; /* تغيير من grid إلى flex */
-        justify-content: center; /* توسيط المحتوى */
+        display: flex;
+        justify-content: center;
         align-items: center;
         text-align: center;
     }
-    .player-title { /* لم يعد بحاجة لـ grid-column */ }
 
   </style>
 </head>
@@ -289,9 +277,6 @@
   const CORRECT_CODE = "1212"; 
   let isLoggedIn = true; 
   
-  /**
-   * 🛑 وظيفة جلب الرابط الأصلي 🛑
-   */
   function getOriginalLink(link) {
     if (link.includes('ضع هنا رابط البث الأصلي')) {
         return 'INVALID_LINK';
@@ -299,10 +284,6 @@
     return link;
   }
 
-  // --------------------------------------------------------
-  // وظائف التحكم بالدخول (تم تبسيطها)
-  // --------------------------------------------------------
-  
   function togglePages(status) {
       const loginPage = document.getElementById("loginPage");
       const channelsContent = document.getElementById("channelsContent");
@@ -322,13 +303,8 @@
       togglePages(true);
   };
 
-  // --------------------------------------------------------
-  // وظائف التشغيل (تم تعديلها)
-  // --------------------------------------------------------
-
   /**
-   * تشغيل قناة البث المباشر. يستخدم HLS.js للأندرويد والكروم/فايرفوكس، والمشغل الأصلي للآيفون (iOS).
-   * ⭐️ تم إضافة طلب ملء الشاشة (Fullscreen) بعد بدء التشغيل.
+   * تشغيل قناة البث المباشر وطلب وضع ملء الشاشة.
    */
   function playChannel(id, m3u8Url, name) {
     
@@ -357,7 +333,9 @@
     function requestFullscreen() {
         if (video.requestFullscreen) {
             video.requestFullscreen();
-        } else if (video.webkitRequestFullscreen) { /* Safari */
+        } else if (video.webkitEnterFullscreen) { // ⭐️ هذه الطريقة هي الأكثر شيوعاً لـ iOS MediaElement
+            video.webkitEnterFullscreen();
+        } else if (video.webkitRequestFullscreen) { /* Safari (Modern) */
             video.webkitRequestFullscreen();
         } else if (video.msRequestFullscreen) { /* IE11 */
             video.msRequestFullscreen();
@@ -366,9 +344,10 @@
 
     // 2. محرك التشغيل المتوافق مع كل الأجهزة
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // المسار الأمثل لأجهزة iOS
+      // ⭐️ المسار الأمثل لأجهزة iOS (iPhone/iPad)
       video.src = originalUrl;
       video.addEventListener('loadedmetadata', function() {
+        // يتم طلب ملء الشاشة بعد نجاح التشغيل
         video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked on iOS:', e));
       });
     } else if (Hls.isSupported()) {
@@ -378,6 +357,7 @@
       hls.loadSource(originalUrl);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        // يتم طلب ملء الشاشة بعد نجاح التشغيل
         video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked:', e));
       });
     } else {
@@ -398,9 +378,6 @@
     }
   }
   
-  /**
-   * دالة لمشاركة الموقع
-   */
   function shareSite() {
       const shareData = {
           title: 'Rahomi TV',
