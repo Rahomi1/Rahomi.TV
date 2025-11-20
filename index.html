@@ -341,22 +341,35 @@
             video.msRequestFullscreen();
         }
     }
+    
+    // دالة للتحقق من وضع ملء الشاشة على iOS
+    function isiOSFullscreen() {
+        // webkitSupportsFullscreen هو خاصية متوفرة في iOS وتصبح true عندما يكون المشغل في وضع ملء الشاشة
+        return video.webkitSupportsFullscreen && video.webkitDisplayingFullscreen;
+    }
 
     // 2. محرك التشغيل المتوافق مع كل الأجهزة
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // المسار الأمثل لأجهزة iOS (iPhone/iPad)
+      // ⭐️ المسار الأمثل لأجهزة iOS (iPhone/iPad)
       video.src = originalUrl;
       
-      // ⭐️ إضافة مستمع الحدث الخاص بالخروج من وضع ملء الشاشة على iOS
-      video.addEventListener('webkitendfullscreen', function() {
-        console.log('Exited fullscreen on iOS, attempting to resume playback.');
-        video.play().catch(e => console.log('Failed to resume playback after fullscreen exit:', e));
+      // ⭐️ الحل الجديد لضمان استئناف التشغيل على iOS
+      video.addEventListener('pause', function() {
+          // نستخدم setTimeout لتأخير محاولة التشغيل قليلاً لضمان أن المشغل قد خرج تماماً من وضع ملء الشاشة
+          setTimeout(() => {
+              // إذا كان الفيديو متوقفاً ولم يعد في وضع ملء الشاشة، قم بالتشغيل
+              if (video.paused && !isiOSFullscreen()) {
+                  console.log('iOS pause detected outside fullscreen, attempting to resume playback.');
+                  video.play().catch(e => console.log('Failed to resume playback after fullscreen exit:', e));
+              }
+          }, 300); // تأخير 300 مللي ثانية
       });
       
       video.addEventListener('loadedmetadata', function() {
         // يتم طلب ملء الشاشة بعد نجاح التشغيل
         video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked on iOS:', e));
       });
+      
     } else if (Hls.isSupported()) {
       // المسار الأمثل لأجهزة أندرويد والكمبيوتر (باستخدام HLS.js)
       var hls = new Hls();
@@ -368,10 +381,10 @@
         video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked:', e));
       });
       
-      // إضافة مستمع لمتصفحات غير iOS تدعم Fullscreen API
+      // مستمع لمتصفحات غير iOS تدعم Fullscreen API
       document.addEventListener('fullscreenchange', function() {
+          // يتم فحص ما إذا كنا قد خرجنا من وضع ملء الشاشة
           if (!document.fullscreenElement && !document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) {
-              // تم الخروج من وضع ملء الشاشة
               video.play().catch(e => console.log('Failed to resume playback after fullscreen exit:', e));
           }
       });
