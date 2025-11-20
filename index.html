@@ -286,9 +286,7 @@
 
   <script>
   let currentHls = null;
-  // تم إبقاء هذا المتغير ولكن لن يتم استخدامه للتحقق
   const CORRECT_CODE = "1212"; 
-  // ⭐️ تغيير مهم: تعيين حالة تسجيل الدخول إلى true بشكل دائم
   let isLoggedIn = true; 
   
   /**
@@ -305,13 +303,10 @@
   // وظائف التحكم بالدخول (تم تبسيطها)
   // --------------------------------------------------------
   
-  // ❌ تم إزالة دالة checkCode()
-  
   function togglePages(status) {
       const loginPage = document.getElementById("loginPage");
       const channelsContent = document.getElementById("channelsContent");
       
-      // بسبب أن status ستكون true دائماً الآن
       if (status) {
           loginPage.classList.add("hidden");
           channelsContent.classList.remove("hidden");
@@ -323,9 +318,8 @@
       }
   }
   
-  // ⭐️ تغيير مهم: عند تحميل الصفحة، يتم إظهار المحتوى مباشرة
   window.onload = function() {
-      togglePages(true); // يتم تمرير true دائماً
+      togglePages(true);
   };
 
   // --------------------------------------------------------
@@ -334,9 +328,9 @@
 
   /**
    * تشغيل قناة البث المباشر. يستخدم HLS.js للأندرويد والكروم/فايرفوكس، والمشغل الأصلي للآيفون (iOS).
+   * ⭐️ تم إضافة طلب ملء الشاشة (Fullscreen) بعد بدء التشغيل.
    */
   function playChannel(id, m3u8Url, name) {
-    // ❌ تم إزالة شرط: if (!isLoggedIn) { ... }
     
     const originalUrl = getOriginalLink(m3u8Url); 
     
@@ -353,18 +347,29 @@
         currentHls = null;
     }
 
-    // تم إزالة object-cover ليعرض الفيديو بنسبة أبعاده الأصلية (قد يعيد الشريط الأسود)
+    // إنشاء عنصر الفيديو
     playerContainer.innerHTML = `
       <video id="videoPlayer" class="w-full h-full rounded-xl border-0" controls autoplay playsinline></video>
     `;
     const video = document.getElementById('videoPlayer');
+    
+    // دالة لطلب وضع ملء الشاشة (Fullscreen)
+    function requestFullscreen() {
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) { /* Safari */
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) { /* IE11 */
+            video.msRequestFullscreen();
+        }
+    }
 
     // 2. محرك التشغيل المتوافق مع كل الأجهزة
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
       // المسار الأمثل لأجهزة iOS
       video.src = originalUrl;
       video.addEventListener('loadedmetadata', function() {
-        video.play().catch(e => console.log('Autoplay blocked on iOS:', e));
+        video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked on iOS:', e));
       });
     } else if (Hls.isSupported()) {
       // المسار الأمثل لأجهزة أندرويد والكمبيوتر (باستخدام HLS.js)
@@ -373,7 +378,7 @@
       hls.loadSource(originalUrl);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
-        video.play().catch(e => console.log('Autoplay blocked:', e));
+        video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked:', e));
       });
     } else {
         playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، متصفحك لا يدعم تشغيل هذا النوع من البث المباشر (HLS).</div>`;
