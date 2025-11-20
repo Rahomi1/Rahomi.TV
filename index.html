@@ -7,7 +7,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght=700&display=swap" rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -23,6 +23,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      /* ⭐️ نمط لمنع تحديد النص على جميع المتصفحات */
+      -webkit-user-select: none; 
+      -ms-user-select: none; 
+      user-select: none; 
     }
     .title-font { font-family: 'Changa', sans-serif; }
     .glass {
@@ -61,13 +65,19 @@
   <script>
     // 1. منع استخدام مفاتيح فحص العناصر والمطورين (F12, Ctrl+Shift+I, إلخ)
     document.onkeydown = function(e) {
-      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+      // منع مفاتيح المطورين والقص والنسخ واللصق
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
         return false;
+      }
+      if (e.ctrlKey && (e.key === 'c' || e.key === 'x')) {
+          e.preventDefault(); // منع النسخ والقص
       }
     };
     // 2. منع النقر بالزر الأيمن للموس ومنع تحديد ونسخ النص
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.addEventListener('selectstart', event => event.preventDefault()); 
+    document.addEventListener('copy', event => event.preventDefault()); // منع عملية النسخ نفسها
+    document.addEventListener('cut', event => event.preventDefault()); // منع عملية القص
   </script>
 
   <div id="loginPage" class="hidden w-full h-screen fixed top-0 left-0 z-50 flex items-center justify-center backdrop-blur-sm bg-gray-900/80">
@@ -300,7 +310,8 @@
   }
   
   window.onload = function() {
-      togglePages(true);
+      // إذا كان `isLoggedIn` هو `true`، سيتم إخفاء شاشة تسجيل الدخول
+      togglePages(true); 
   };
 
   /**
