@@ -333,7 +333,7 @@
     function requestFullscreen() {
         if (video.requestFullscreen) {
             video.requestFullscreen();
-        } else if (video.webkitEnterFullscreen) { // ⭐️ هذه الطريقة هي الأكثر شيوعاً لـ iOS MediaElement
+        } else if (video.webkitEnterFullscreen) { // iOS MediaElement
             video.webkitEnterFullscreen();
         } else if (video.webkitRequestFullscreen) { /* Safari (Modern) */
             video.webkitRequestFullscreen();
@@ -344,8 +344,15 @@
 
     // 2. محرك التشغيل المتوافق مع كل الأجهزة
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // ⭐️ المسار الأمثل لأجهزة iOS (iPhone/iPad)
+      // المسار الأمثل لأجهزة iOS (iPhone/iPad)
       video.src = originalUrl;
+      
+      // ⭐️ إضافة مستمع الحدث الخاص بالخروج من وضع ملء الشاشة على iOS
+      video.addEventListener('webkitendfullscreen', function() {
+        console.log('Exited fullscreen on iOS, attempting to resume playback.');
+        video.play().catch(e => console.log('Failed to resume playback after fullscreen exit:', e));
+      });
+      
       video.addEventListener('loadedmetadata', function() {
         // يتم طلب ملء الشاشة بعد نجاح التشغيل
         video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked on iOS:', e));
@@ -360,6 +367,15 @@
         // يتم طلب ملء الشاشة بعد نجاح التشغيل
         video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked:', e));
       });
+      
+      // إضافة مستمع لمتصفحات غير iOS تدعم Fullscreen API
+      document.addEventListener('fullscreenchange', function() {
+          if (!document.fullscreenElement && !document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) {
+              // تم الخروج من وضع ملء الشاشة
+              video.play().catch(e => console.log('Failed to resume playback after fullscreen exit:', e));
+          }
+      });
+      
     } else {
         playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، متصفحك لا يدعم تشغيل هذا النوع من البث المباشر (HLS).</div>`;
     }
