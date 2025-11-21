@@ -12,7 +12,6 @@
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <style>
-    /* ... (CSS Styles remain the same) ... */
     body {
       background: #020617;
       font-family: 'Cairo', sans-serif;
@@ -48,6 +47,11 @@
       background: radial-gradient(circle at 0% 0%, rgba(56,189,248,0.15), rgba(15,23,42,0.92));
       border-color: #38bdf8;
     }
+    .server-button-active {
+        background-color: #0c4a6e; /* sky-800 */
+        border-color: #38bdf8; /* sky-400 */
+        box-shadow: 0 0 10px rgba(56,189,248,0.5);
+    }
     #playerContainer { position: relative; }
     #videoPlayer { min-height: 250px; } 
     .player-header {
@@ -56,7 +60,6 @@
         align-items: center;
         text-align: center;
     }
-
   </style>
 </head>
 
@@ -127,7 +130,7 @@
             id="playerContainer"
             class="relative w-full aspect-video rounded-xl bg-black border border-slate-800 shadow-inner flex items-center justify-center text-slate-400">
 
-            <div class="flex flex-col items-center gap-3 px-4 text-center">
+            <div id="playerPlaceholder" class="flex flex-col items-center gap-3 px-4 text-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <circle cx="12" cy="12" r="9" stroke-width="1.4"></circle>
                   <path d="M10 9.5v5l4-2.5-4-2.5z" fill="currentColor" stroke-width="0.6" stroke="none"></path>
@@ -143,9 +146,128 @@
             </div>
           </div>
           
+          <div class="mt-4 border-t border-slate-800 pt-4">
+              <h3 class="text-lg font-semibold mb-3 text-center text-sky-300">
+                  اختر السيرفر
+              </h3>
+              
+              <div class="flex flex-wrap gap-2 justify-center" id="allServersContainer">
+                  
+                  <button 
+                      onclick="switchServer('server1')"
+                      id="btn-server1"
+                      class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button server-button-active"
+                      data-server-id="server1"
+                  >
+                      الرئيسي⚡
+                  </button>
+                  <button 
+                      onclick="switchServer('server2')"
+                      id="btn-server2"
+                      class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                      data-server-id="server2"
+                  >
+                     ايرثلنك
+                  </button>
+                   <button 
+                      onclick="switchServer('server3')"
+                      id="btn-server3"
+                      class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                      data-server-id="server3"
+                  >
+                      فايبر اكس وكويك نت
+                  </button>
+                  
+                  <div id="showMoreContainer" class="hidden flex-wrap gap-2 justify-center xl:flex">
+                     <button 
+                        onclick="switchServer('server4')"
+                        id="btn-server4"
+                        class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                        data-server-id="server4"
+                    >
+                       سكاي لاين 
+                    </button>
+                     <button 
+                        onclick="switchServer('server5')"
+                        id="btn-server5"
+                        class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                        data-server-id="server5"
+                    >
+                        الرحمة FTTH
+                    </button>
+                     
+                    <button 
+                        onclick="switchServer('server8')"
+                        id="btn-server8"
+                        class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                        data-server-id="server8"
+                    >
+                        الحياة FTTH
+                    </button>
+                    <button 
+                        onclick="switchServer('server9')"
+                        id="btn-server9"
+                        class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                        data-server-id="server9"
+                    >
+                       الجزيرة وبعض الشبكات 
+                    </button>
+                    <button 
+                        onclick="switchServer('server10')"
+                        id="btn-server10"
+                        class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                        data-server-id="server10"
+                    >
+                       عراق سيل وبعض الشبكات 
+                    </button>
+                    <button 
+                        onclick="switchServer('server11')"
+                        id="btn-server11"
+                        class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                        data-server-id="server11"
+                    >
+                        الشمس
+                    </button>
+                    
+                    <button 
+                        onclick="switchServer('server12')"
+                        id="btn-server12"
+                        class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                        data-server-id="server12"
+                    >
+                        قنوات Veo
+                    </button>
+                    <button 
+                        onclick="switchServer('server6')"
+                        id="btn-server6"
+                        class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                        data-server-id="server6"
+                    >
+                        قنوات عالمية🌐
+                    </button>
+                     <button 
+                        onclick="switchServer('server7')"
+                        id="btn-server7"
+                        class="py-1 px-3 text-sm font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                        data-server-id="server7"
+                    >
+                        قنوات ترفيهية🎬
+                    </button>
+                  </div>
+
+                  <button 
+                      onclick="toggleServers()"
+                      id="showMoreBtn"
+                      class="py-1 px-3 text-sm font-bold rounded-lg border border-sky-600 bg-sky-600/20 hover:bg-sky-600/40 transition xl:hidden"
+                  >
+                      عرض المزيد
+                  </button>
+
+              </div>
+          </div>
           <div class="mt-3 flex items-center justify-center text-center">
              <span class="text-xs font-medium text-amber-300 bg-slate-900 py-1 px-3 rounded-full border border-amber-400/50 shadow-md">
-              القنوات تعمل وقت المباريات فقط !
+             قنوات السيرفر الرئيسي تعمل وقت المباريات فقط كذالك اغلب السيرفرات !
              </span>
           </div>
           </div>
@@ -155,103 +277,11 @@
 
         <div class="glass rounded-2xl p-4 md:p-5 shadow-xl">
           <h2 class="title-font text-xl font-bold text-sky-200 mb-4">
-            القنوات المتاحة
+            القنوات 
           </h2>
 
           <div class="flex flex-col gap-3" id="channelList">
-            
-            <div 
-              onclick="playChannel(1, 'https://stream.supertv.gg:3001/supertv/sport/stv1/ch1/adaptive.m3u8', 'الرياضية 1')"
-              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="1">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-sky-500/20 flex items-center justify-center border border-sky-400/50">
-                    <span class="text-lg font-bold">1</span>
-                </div>
-                <div class="flex flex-col flex-1 min-w-0">
-                  <span class="font-semibold text-base text-slate-50 truncate">الرياضية 1</span>
-                </div>
-              </div>
             </div>
-
-            <div 
-              onclick="playChannel(2, 'https://stream.supertv.gg:3002/supertv/sport/stv2/ch2/adaptive.m3u8', 'الرياضية 2')"
-              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="2">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center border border-red-400/50">
-                        <span class="text-lg font-bold">2</span>
-                    </div>
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 2</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div 
-               onclick="playChannel(3, 'https://stream.supertv.gg:3003/supertv/sport/stv3/ch3/adaptive.m3u8', 'الرياضية 3')"
-               class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-400/50">
-                        <span class="text-lg font-bold">3</span>
-                    </div>
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 3</span>
-                    </div>
-                </div>
-            </div>
-
-            <div 
-              onclick="playChannel(4, 'https://stream.supertv.gg:3004/supertv/sport/stv4/ch4/adaptive.m3u8', 'الرياضية 4')"
-              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center border border-yellow-400/50">
-                        <span class="text-lg font-bold">4</span>
-                    </div>
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 4</span>
-                    </div>
-                </div>
-            </div>
-
-             <div 
-              onclick="playChannel(5, 'https://stream.supertv.gg:3005/supertv/sport/stv5/ch5/adaptive.m3u8', 'الرياضية 5')"
-              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="5">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center border border-purple-400/50">
-                        <span class="text-lg font-bold">5</span>
-                    </div>
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 5</span>
-                    </div>
-                </div>
-            </div>
-
-            <div 
-              onclick="playChannel(6, 'https://stream.supertv.gg:3006/supertv/sport/stv6/ch6/adaptive.m3u8', 'الرياضية 6')"
-              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="6">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-pink-500/20 flex items-center justify-center border border-pink-400/50">
-                        <span class="text-lg font-bold">6</span>
-                    </div>
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 6</span>
-                    </div>
-                </div>
-            </div>
-
-            <div 
-              onclick="playChannel(7, 'https://stream.supertv.gg:3007/supertv/sport/stv7/ch7/adaptive.m3u8', 'الرياضية 7')"
-              class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" data-id="7">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center border border-orange-400/50">
-                        <span class="text-lg font-bold">7</span>
-                    </div>
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <span class="font-semibold text-base text-slate-50 truncate">الرياضية 7</span>
-                    </div>
-                </div>
-            </div>
-
-          </div>
         </div>
         
         <div class="glass rounded-2xl p-4 md:p-5 shadow-xl border-sky-400/50">
@@ -287,8 +317,247 @@
   const CORRECT_CODE = "1212"; 
   let isLoggedIn = true; 
   
+  // ⭐️ بيانات القنوات الجديدة (12 سيرفر) ⭐️
+  const CHANNELS = {
+      // ⭐️ السيرفر 1 - القنوات الأصلية ⭐️
+      'server1': [
+          {id: 1, name: 'الرياضية 1', url: 'https://stream.supertv.gg:3001/supertv/sport/stv1/ch1/adaptive.m3u8', color: 'sky'},
+          {id: 2, name: 'الرياضية 2', url: 'https://stream.supertv.gg:3002/supertv/sport/stv2/ch2/adaptive.m3u8', color: 'red'},
+          {id: 3, name: 'الرياضية 3', url: 'https://stream.supertv.gg:3003/supertv/sport/stv3/ch3/adaptive.m3u8', color: 'emerald'},
+          {id: 4, name: 'الرياضية 4', url: 'https://stream.supertv.gg:3004/supertv/sport/stv4/ch4/adaptive.m3u8', color: 'yellow'},
+          {id: 5, name: 'الرياضية 5', url: 'https://stream.supertv.gg:3005/supertv/sport/stv5/ch5/adaptive.m3u8', color: 'purple'},
+          {id: 6, name: 'الرياضية 6', url: 'https://stream.supertv.gg:3006/supertv/sport/stv6/ch6/adaptive.m3u8', color: 'pink'},
+          {id: 7, name: 'الرياضية 7', url: 'https://stream.supertv.gg:3007/supertv/sport/stv7/ch7/adaptive.m3u8', color: 'orange'},
+      ],
+      // ⭐️ السيرفر 2 - قنوات بديلة (مثال) ⭐️
+      'server2': [
+          {id: 8, name: 'ايرثلنك 1 تحت التجربة', url: 'http://stream.mytvplus.net:7002/sport/ch1/ch1_720.m3u8', color: 'indigo'},
+          {id: 9, name: 'ايرثلنك 2 تحت التجربة', url: 'http://stream.mytvplus.net:7003/sport/ch2/ch2_720.m3u8', color: 'teal'},
+          {id: 10, name: 'ايرثلنك 3 تحت التجربة', url: 'http://stream.mytvplus.net:7004/sport/ch3/ch3_720.m3u8', color: 'fuchsia'},
+          {id: 11, name: 'ايرثلنك 4 تحت التجربة', url: 'http://stream.mytvplus.net:7005/sport/ch4/ch4_720.m3u8', color: 'gray'},
+          {id: 12, name: 'ايرثلنك 5 تحت التجربة', url: 'http://stream.mytvplus.net:7006/sport/ch5/ch5_720.m3u8', color: 'amber'},
+          {id: 13, name: 'ايرثلنك 6 تحت التجربة', url: 'http://stream.mytvplus.net:7007/sport/ch6/ch6_720.m3u8', color: 'red'},
+          {id: 14, name: 'ايرثلنك 7 تحت التجربة', url: 'http://stream.mytvplus.net:7008/sport/ch7/ch7_720.m3u8', color: 'green'},
+      ],
+      // ⭐️ السيرفر 3 - (مثال) ⭐️
+      'server3': [
+          {id: 15, name: 'فايبر اكس وكويك نت 1', url: 'http://45.67.56.78/Sport1/tracks-v1a1/mono.m3u8', color: 'green'},
+          {id: 16, name: 'فايبر اكس وكويك نت 2', url: 'http://45.67.56.78/Sport2/tracks-v1a1/mono.m3u8', color: 'blue'},
+          {id: 17, name: 'فايبر اكس وكويك نت 3', url: 'http://45.67.56.78/Sport3/tracks-v1a1/mono.m3u8', color: 'purple'},
+          {id: 18, name: 'فايبر اكس وكويك نت 4', url: 'http://45.67.56.78/Sport4/tracks-v1a1/mono.m3u8', color: 'pink'},
+          {id: 19, name: 'فايبر اكس وكويك نت 5', url: 'http://45.67.56.78/Sport5/tracks-v1a1/mono.m3u8', color: 'yellow'},
+          {id: 20, name: 'فايبر اكس وكويك نت 6', url: 'http://45.67.56.78/Sport6/tracks-v1a1/mono.m3u8', color: 'orange'},
+          {id: 21, name: 'فايبر اكس وكويك نت 7', url: 'http://45.67.56.78/Sport7/tracks-v1a1/mono.m3u8', color: 'teal'},
+      ],
+      // ⭐️ السيرفر 4 - (مثال) ⭐️
+      'server4': [
+          {id: 22, name: 'سكاي لاين 1', url: 'http://10.3.0.4/Bein-Sport-1/tracks-v1a1/mono.m3u8?token=zCWqLhRssKyj70', color: 'red'},
+          {id: 23, name: 'سكاي لاين 2', url: 'http://10.3.0.4/Bein-Sport-2/tracks-v1a1/mono.m3u8?token=zCWqLhRssKyj70', color: 'sky'},
+          {id: 24, name: 'سكاي لاين 3', url: 'http://10.3.0.4/Bein-Sport-3/tracks-v1a1/mono.m3u8?token=zCWqLhRssKyj70', color: 'emerald'},
+          {id: 25, name: 'سكاي لاين 4', url: 'http://10.3.0.4/Bein-Sport-4/tracks-v1a1/mono.m3u8?token=zCWqLhRssKyj70', color: 'indigo'},
+          {id: 26, name: 'سكاي لاين 5', url: 'http://10.3.0.4/SPORT-1/tracks-v1a1/mono.m3u8?token=zCWqLhRssKyj70', color: 'pink'},
+          {id: 27, name: 'سكاي لاين 6', url: 'http://10.3.0.4/SPORT-2/tracks-v1a1/mono.m3u8?token=zCWqLhRssKyj70', color: 'yellow'},
+          {id: 28, name: 'سكاي لاين 7', url: 'http://10.3.0.4/SPORT-3/tracks-v1a1/mono.m3u8?token=zCWqLhRssKyj70', color: 'orange'},
+      ],
+      // ⭐️ السيرفر 5 - (مثال) ⭐️
+      'server5': [
+          {id: 29, name: 'الرحمة FTTH 1', url: 'https://tv.kooraiq.com:4433/beIN_sport1/tracks-v1a1/mono.m3u8', color: 'gray'},
+          {id: 30, name: 'الرحمة FTTH 2', url: 'https://tv.kooraiq.com:4433/beIN_sport2/tracks-v1a1/mono.m3u8', color: 'amber'},
+          {id: 31, name: 'الرحمة FTTH 3', url: 'https://tv.kooraiq.com:4433/beIN_sport3/tracks-v1a1/mono.m3u8', color: 'lime'},
+          {id: 32, name: 'الرحمة FTTH 4', url: 'https://tv.kooraiq.com:4433/beIN_sport4/tracks-v1a1/mono.m3u8', color: 'teal'},
+          {id: 33, name: 'الرحمة FTTH 5', url: 'https://tv.kooraiq.com:4433/beIN_sport5/tracks-v1a1/mono.m3u8', color: 'fuchsia'},
+          {id: 34, name: 'الرحمة FTTH 6', url: 'https://tv.kooraiq.com:4433/beIN_sport6/tracks-v1a1/mono.m3u8', color: 'purple'},
+          {id: 35, name: 'الرحمة FTTH 7', url: 'https://tv.kooraiq.com:4433/beIN_sport7/tracks-v1a1/mono.m3u8', color: 'sky'},
+      ],
+      
+      // ⭐️⭐️⭐️ السيرفر 8 ⭐️⭐️⭐️
+      'server8': [
+          {id: 50, name: 'الحياة FTTH 1', url: 'http://tv.shoot.ws/Sport1/tracks-v1a1/mono.m3u8', color: 'amber'},
+          {id: 51, name: 'الحياة FTTH 2', url: 'http://tv.shoot.ws/Sport2/tracks-v1a1/mono.m3u8', color: 'cyan'},
+          {id: 52, name: 'الحياة FTTH 3', url: 'http://tv.shoot.ws/Sport3/tracks-v1a1/mono.m3u8', color: 'lime'},
+          {id: 53, name: 'الحياة FTTH 4', url: 'http://tv.shoot.ws/Sport4/tracks-v1a1/mono.m3u8', color: 'yellow'}, 
+          {id: 54, name: 'الحياة FTTH 5', url: 'http://tv.shoot.ws/Sport5/tracks-v1a1/mono.m3u8', color: 'red'},    
+          {id: 55, name: 'الحياة FTTH 6', url: 'http://tv.shoot.ws/Sport6/tracks-v1a1/mono.m3u8', color: 'blue'},   
+          {id: 56, name: 'الحياة FTTH 7', url: 'http://tv.shoot.ws/Sport7/tracks-v1a1/mono.m3u8', color: 'green'},  
+      ],
+      
+      // ⭐️⭐️⭐️ السيرفر 9 ⭐️⭐️⭐️
+      'server9': [
+          {id: 57, name: 'الجزيرة وبعض الشبكات 1', url: 'http://5.62.130.10:80/iptv/iptv/28.m3u8', color: 'red'},
+          {id: 58, name: 'الجزيرة وبعض الشبكات 2', url: 'http://5.62.130.10:80/iptv/iptv/29.m3u8', color: 'fuchsia'},
+          {id: 59, name: 'الجزيرة وبعض الشبكات 3', url: 'http://5.62.130.10:80/iptv/iptv/32.m3u8', color: 'teal'},
+          {id: 60, name: 'الجزيرة وبعض الشبكات 4', url: 'http://5.62.130.10:80/iptv/iptv/33.m3u8', color: 'indigo'}, 
+          {id: 61, name: 'الجزيرة وبعض الشبكات 5', url: 'http://5.62.130.10:80/iptv/iptv/34.m3u8', color: 'pink'},   
+          {id: 62, name: 'الجزيرة وبعض الشبكات 6', url: 'http://5.62.130.10:80/iptv/iptv/35.m3u8', color: 'purple'}, 
+          {id: 63, name: 'الجزيرة وبعض الشبكات 7', url: 'http://5.62.130.10:80/iptv/iptv/36.m3u8', color: 'gray'},   
+      ],
+      
+      // ⭐️⭐️⭐️ السيرفر 10 ⭐️⭐️⭐️
+      'server10': [
+          {id: 64, name: 'عراق سيل وبعض الشبكات 1', url: 'https://stream.tvhub.tv:32123/bein-sport1/tracks-v1a1/mono.m3u8', color: 'sky'},
+          {id: 65, name: 'عراق سيل وبعض الشبكات 2', url: 'https://stream.tvhub.tv:32123/bein-sport2/tracks-v1a1/mono.m3u8', color: 'purple'},
+          {id: 66, name: 'عراق سيل وبعض الشبكات 3', url: 'https://stream.tvhub.tv:32123/bein-sport3/tracks-v1a1/mono.m3u8', color: 'green'},
+          {id: 67, name: 'عراق سيل وبعض الشبكات 4', url: 'https://stream.tvhub.tv:32123/bein-sport4/tracks-v1a1/mono.m3u8', color: 'orange'}, 
+          {id: 68, name: 'عراق سيل وبعض الشبكات 5', url: 'https://stream.tvhub.tv:32123/bein-sport5/tracks-v1a1/mono.m3u8', color: 'teal'},   
+          {id: 69, name: 'عراق سيل وبعض الشبكات 6', url: 'https://stream.tvhub.tv:32123/bein-sport6/tracks-v1a1/mono.m3u8', color: 'cyan'},   
+          {id: 70, name: 'عراق سيل وبعض الشبكات 7', url: 'https://stream.tvhub.tv:32123/bein-sport7/tracks-v1a1/mono.m3u8', color: 'lime'},   
+      ],
+      
+      // ⭐️⭐️⭐️ السيرفر 11 ⭐️⭐️⭐️
+      'server11': [
+          {id: 71, name: 'الشمس 1', url: 'http://stream.vega-box.com:6066/sport/ch1/adaptive.m3u8', color: 'indigo'},
+          {id: 72, name: 'الشمس 2', url: 'http://stream.vega-box.com:6066/sport/ch2/adaptive.m3u8', color: 'pink'},
+          {id: 73, name: 'الشمس 3', url: 'http://stream.vega-box.com:6066/sport/ch3/adaptive.m3u8', color: 'gray'},
+          {id: 74, name: 'الشمس 4', url: 'http://stream.vega-box.com:6066/sport/ch4/adaptive.m3u8', color: 'emerald'}, 
+          {id: 75, name: 'الشمس 5', url: 'http://stream.vega-box.com:6066/sport/ch5/adaptive.m3u8', color: 'fuchsia'}, 
+          {id: 76, name: 'الشمس 6', url: 'http://stream.vega-box.com:6066/sport/ch6/adaptive.m3u8', color: 'amber'},   
+          {id: 77, name: 'الشمس 7', url: 'http://stream.vega-box.com:6066/sport/ch7/adaptive.m3u8', color: 'sky'},     
+      ],
+
+      // ⭐️⭐️⭐️ السيرفر 12 (الجديد) ⭐️⭐️⭐️
+      // يبدأ تسلسل ID من 78 بعد آخر قناة في server11
+      'server12': [
+          {id: 78, name: 'Veo 1', url: 'https://stream.veo.buzz:6072/sport/ch1/adaptive.m3u8', color: 'red'},
+          {id: 79, name: 'Veo 2', url: 'https://stream.veo.buzz:6073/sport/ch2/adaptive.m3u8', color: 'orange'},
+          {id: 80, name: 'Veo 3', url: 'https://stream.veo.buzz:6074/sport/ch3/adaptive.m3u8', color: 'lime'},
+          {id: 81, name: 'Veo 4', url: 'https://stream.veo.buzz:6075/sport/ch4/adaptive.m3u8', color: 'teal'},
+          {id: 82, name: 'Veo 5', url: 'https://stream.veo.buzz:6076/sport/ch5/adaptive.m3u8', color: 'blue'},
+          {id: 83, name: 'Veo 6', url: 'https://stream.veo.buzz:6077/sport/ch6/adaptive.m3u8', color: 'pink'},
+          {id: 84, name: 'Veo 7', url: 'https://stream.veo.buzz:6078/sport/ch31/adaptive.m3u8', color: 'yellow'},
+      ],
+      // ⭐️⭐️⭐️ نهاية السيرفر 12 ⭐️⭐️⭐️
+
+      // ⭐️ السيرفر 6 - تم تعديل IDs (يبدأ من 85) ⭐️
+      'server6': [
+          {id: 85, name: 'قريباً..', url: 'https://server6.com/ch1/adaptive.m3u8', color: 'red'},
+          {id: 86, name: 'قريباً..', url: 'https://server6.com/ch2/adaptive.m3u8', color: 'green'},
+          {id: 87, name: 'قريباً..', url: 'https://server6.com/ch3/adaptive.m3u8', color: 'blue'},
+          {id: 88, name: 'قريباً..', url: 'https://server6.com/ch4/adaptive.m3u8', color: 'pink'},
+          {id: 89, name: 'قريباً..', url: 'https://server6.com/ch5/adaptive.m3u8', color: 'orange'},
+          {id: 90, name: 'قريباً..', url: 'https://server6.com/ch6/adaptive.m3u8', color: 'yellow'},
+          {id: 91, name: 'قريباً..', url: 'https://server6.com/ch7/adaptive.m3u8', color: 'teal'},
+      ],
+      // ⭐️ السيرفر 7 - تم تعديل IDs (يبدأ من 92) ⭐️
+      'server7': [
+          {id: 92, name: 'قريباً..', url: 'https://server7.com/ch1/adaptive.m3u8', color: 'indigo'},
+          {id: 93, name: 'قريباً..', url: 'https://server7.com/ch2/adaptive.m3u8', color: 'fuchsia'},
+          {id: 94, name: 'قريباً..', url: 'https://server7.com/ch3/adaptive.m3u8', color: 'gray'},
+          {id: 95, name: 'قريباً..', url: 'https://server7.com/ch4/adaptive.m3u8', color: 'amber'},
+          {id: 96, name: 'قريباً..', url: 'https://server7.com/ch5/adaptive.m3u8', color: 'lime'},
+          {id: 97, name: 'قريباً..', url: 'https://server7.com/ch6/adaptive.m3u8', color: 'sky'},
+          {id: 98, name: 'قريباً..', url: 'https://server7.com/ch7/adaptive.m3u8', color: 'emerald'},
+      ],
+  };
+
+  let activeServer = 'server1'; // السيرفر النشط الافتراضي
+  let serversVisible = false; // حالة إظهار/إخفاء السيرفرات الإضافية على الهاتف
+
+  // ⭐️ الدالة الجديدة لتبديل عرض السيرفرات الإضافية ⭐️
+  function toggleServers() {
+      const container = document.getElementById('showMoreContainer');
+      const button = document.getElementById('showMoreBtn');
+
+      if (serversVisible) {
+          // الإخفاء
+          container.classList.add('hidden');
+          button.textContent = 'عرض المزيد';
+      } else {
+          // الإظهار
+          container.classList.remove('hidden');
+          container.classList.add('flex');
+          button.textContent = 'عرض أقل';
+      }
+      serversVisible = !serversVisible;
+  }
+
+
+  // دالة مساعدة لتوليد كود HTML لبطاقة القناة
+  function createChannelCard(channel) {
+      return `
+          <div 
+            onclick="playChannel(${channel.id}, '${channel.url}', '${channel.name}')"
+            class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" 
+            data-id="${channel.id}">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-${channel.color}-500/20 flex items-center justify-center border border-${channel.color}-400/50">
+                  <span class="text-lg font-bold">${channel.id}</span>
+              </div>
+              <div class="flex flex-col flex-1 min-w-0">
+                <span class="font-semibold text-base text-slate-50 truncate">${channel.name}</span>
+              </div>
+            </div>
+          </div>
+      `;
+  }
+  
+  /**
+   * تبديل السيرفر وعرض القنوات التابعة له.
+   * @param {string} serverId - مُعرف السيرفر (مثل 'server1', 'server2').
+   */
+  function switchServer(serverId) {
+      if (!CHANNELS[serverId]) return;
+
+      activeServer = serverId;
+      const channelListContainer = document.getElementById('channelList');
+      const serverButtons = document.querySelectorAll('.server-button');
+      
+      // 1. تحديث شكل زر السيرفر النشط
+      serverButtons.forEach(btn => {
+          btn.classList.remove('server-button-active');
+          if (btn.dataset.serverId === serverId) {
+              btn.classList.add('server-button-active');
+          }
+      });
+
+      // 2. عرض القنوات الخاصة بالسيرفر
+      channelListContainer.innerHTML = ''; // تفريغ القائمة الحالية
+      CHANNELS[serverId].forEach(channel => {
+          channelListContainer.innerHTML += createChannelCard(channel);
+      });
+
+      // 3. إيقاف البث الحالي وعرض الرسالة الافتراضية
+      if (currentHls) {
+          currentHls.destroy();
+          currentHls = null;
+      }
+      const playerContainer = document.getElementById("playerContainer");
+      const playerPlaceholder = document.getElementById("playerPlaceholder");
+      
+      if (playerPlaceholder) {
+        // إذا كان عنصر الـ Placeholder موجودًا بالفعل (أي لا يوجد فيديو قيد التشغيل)
+        playerPlaceholder.style.display = 'flex';
+      } else {
+        // إذا كان هناك فيديو قيد التشغيل، قم بإنشاء الـ Placeholder مرة أخرى
+        playerContainer.innerHTML = `
+          <div id="playerPlaceholder" class="flex flex-col items-center gap-3 px-4 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="9" stroke-width="1.4"></circle>
+                <path d="M10 9.5v5l4-2.5-4-2.5z" fill="currentColor" stroke-width="0.6" stroke="none"></path>
+            </svg>
+            <div class="space-y-1">
+              <p class="font-semibold text-slate-100">
+                اضغط على اسم القناة لبدء المشاهدة.
+              </p>
+              <p class="text-sm text-slate-400">
+                القناة الحالية: <span id="currentChannelLabel" class="font-semibold text-sky-300">لم يتم الاختيار</span>
+              </p>
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById("currentChannelLabel").textContent = 'لم يتم الاختيار';
+      document.querySelectorAll('.channel-card-clickable').forEach(card => card.classList.remove('channel-card-active'));
+  }
+
+
   function getOriginalLink(link) {
-    if (link.includes('ضع هنا رابط البث الأصلي')) {
+    // هذه الدالة تساعد على إظهار رسالة تنبيهية إذا لم يتم وضع روابط حقيقية في السيرفرات البديلة
+    if (link.includes('alternative.server') || link.includes('server2.com') || link.includes('server3.com') || link.includes('server4.com') || link.includes('server5.com') || link.includes('server6.com') || link.includes('server7.com') || link.includes('server8.com') || link.includes('server9.com') || link.includes('server10.com') || link.includes('server11.com')) {
+        return 'INVALID_LINK';
+    }
+    // ⭐️ إضافة السيرفر الجديد إلى قائمة التحذير ⭐️
+    if (link.includes('alternative.server.com')) {
         return 'INVALID_LINK';
     }
     return link;
@@ -310,8 +579,9 @@
   }
   
   window.onload = function() {
-      // إذا كان `isLoggedIn` هو `true`، سيتم إخفاء شاشة تسجيل الدخول
+      // ⭐️ عند تحميل الصفحة، قم بعرض قنوات السيرفر الافتراضي ⭐️
       togglePages(true); 
+      switchServer(activeServer); 
   };
 
   /**
@@ -325,7 +595,7 @@
     const channelLabel = document.getElementById("currentChannelLabel");
     
     if (originalUrl === 'INVALID_LINK') {
-        alert('يرجى وضع رابط بث حقيقي للقناة رقم ' + id + ' أولاً.');
+        alert('يرجى وضع رابط بث حقيقي للقناة في هذا السيرفر أولاً حتى يعمل البث. هذا الرابط مجرد مثال.');
         return;
     }
 
@@ -333,6 +603,13 @@
         currentHls.destroy();
         currentHls = null;
     }
+
+    // إزالة Placeholder إذا كان موجودًا
+    const playerPlaceholder = document.getElementById("playerPlaceholder");
+    if (playerPlaceholder) {
+        playerPlaceholder.remove();
+    }
+
 
     // إنشاء عنصر الفيديو
     playerContainer.innerHTML = `
@@ -342,6 +619,7 @@
     
     // دالة لطلب وضع ملء الشاشة (Fullscreen)
     function requestFullscreen() {
+        // محاولة طلب ملء الشاشة على عنصر الفيديو نفسه أو حاويته
         if (video.requestFullscreen) {
             video.requestFullscreen();
         } else if (video.webkitEnterFullscreen) { // ⭐️ هذه الطريقة هي الأكثر شيوعاً لـ iOS MediaElement
@@ -371,6 +649,18 @@
         // يتم طلب ملء الشاشة بعد نجاح التشغيل
         video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked:', e));
       });
+      // معالجة الأخطاء (اختياري)
+      hls.on(Hls.Events.ERROR, function (event, data) {
+          if (data.fatal) {
+              console.error('HLS Fatal Error:', data.details, data.type);
+              playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، حدث خطأ في البث: ${data.details}. قد تكون القناة غير متاحة حالياً.</div>`;
+              document.getElementById("currentChannelLabel").textContent = 'خطأ في البث';
+              if (currentHls) {
+                  currentHls.destroy();
+                  currentHls = null;
+              }
+          }
+      });
     } else {
         playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، متصفحك لا يدعم تشغيل هذا النوع من البث المباشر (HLS).</div>`;
     }
@@ -383,6 +673,7 @@
     const allChannelCards = document.querySelectorAll('.channel-card-clickable');
     allChannelCards.forEach(card => card.classList.remove('channel-card-active'));
     
+    // ملاحظة: قد تحتاج إلى تحديث طريقة تحديد البطاقة النشطة إذا كان هناك قنوات بنفس الـ id في سيرفرات مختلفة
     const clickedCard = Array.from(allChannelCards).find(card => card.dataset.id == id);
     if(clickedCard) {
         clickedCard.classList.add('channel-card-active');
