@@ -9,7 +9,7 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght=700&display=swap" rel="stylesheet">
 
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <style>
     body {
@@ -52,15 +52,8 @@
         border-color: #38bdf8; /* sky-400 */
         box-shadow: 0 0 10px rgba(56,189,248,0.5);
     }
-    #playerContainer { 
-        position: relative; 
-        overflow: hidden; /* مهم لضمان عدم خروج المشغل عن الحدود */
-    }
-    /* تنسيق خاص لمشغل Clappr */
-    .player-wrapper {
-        width: 100%;
-        height: 100%;
-    }
+    #playerContainer { position: relative; }
+    #videoPlayer { min-height: 250px; } 
     .player-header {
         display: flex;
         justify-content: center;
@@ -320,9 +313,7 @@
   </main>
 
   <script>
-  // متغير لتخزين نسخة مشغل Clappr
-  let player = null;
-  
+  let currentHls = null;
   const CORRECT_CODE = "1212"; 
   let isLoggedIn = true; 
   
@@ -350,7 +341,7 @@
       ],
       // ⭐️ السيرفر 3 - (مثال) ⭐️
       'server3': [
-          {id: 15, name: 'فايبر اكس وكويك نت 1', url: 'http://portal.geniptv.com:8080/live/dmtndmtnkimo/a7GPMeArdf/128864.m3u8', color: 'green'},
+          {id: 15, name: 'فايبر اكس وكويك نت 1', url: 'http://45.67.56.78/Sport1/tracks-v1a1/mono.m3u8', color: 'green'},
           {id: 16, name: 'فايبر اكس وكويك نت 2', url: 'http://45.67.56.78/Sport2/tracks-v1a1/mono.m3u8', color: 'blue'},
           {id: 17, name: 'فايبر اكس وكويك نت 3', url: 'http://45.67.56.78/Sport3/tracks-v1a1/mono.m3u8', color: 'purple'},
           {id: 18, name: 'فايبر اكس وكويك نت 4', url: 'http://45.67.56.78/Sport4/tracks-v1a1/mono.m3u8', color: 'pink'},
@@ -524,17 +515,20 @@
           channelListContainer.innerHTML += createChannelCard(channel);
       });
 
-      // 3. إيقاف البث الحالي وتدمير المشغل
-      if (player) {
-          player.destroy();
-          player = null;
+      // 3. إيقاف البث الحالي وعرض الرسالة الافتراضية
+      if (currentHls) {
+          currentHls.destroy();
+          currentHls = null;
       }
-
-      // 4. إعادة تعيين الـ Placeholder
       const playerContainer = document.getElementById("playerContainer");
+      const playerPlaceholder = document.getElementById("playerPlaceholder");
       
-      // إعادة محتوى الحاوية للوضع الافتراضي (Placeholder)
-      playerContainer.innerHTML = `
+      if (playerPlaceholder) {
+        // إذا كان عنصر الـ Placeholder موجودًا بالفعل (أي لا يوجد فيديو قيد التشغيل)
+        playerPlaceholder.style.display = 'flex';
+      } else {
+        // إذا كان هناك فيديو قيد التشغيل، قم بإنشاء الـ Placeholder مرة أخرى
+        playerContainer.innerHTML = `
           <div id="playerPlaceholder" class="flex flex-col items-center gap-3 px-4 text-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <circle cx="12" cy="12" r="9" stroke-width="1.4"></circle>
@@ -549,7 +543,8 @@
               </p>
             </div>
           </div>
-      `;
+        `;
+      }
 
       document.getElementById("currentChannelLabel").textContent = 'لم يتم الاختيار';
       document.querySelectorAll('.channel-card-clickable').forEach(card => card.classList.remove('channel-card-active'));
@@ -590,11 +585,12 @@
   };
 
   /**
-   * تشغيل قناة البث المباشر باستخدام Clappr
+   * تشغيل قناة البث المباشر وطلب وضع ملء الشاشة.
    */
   function playChannel(id, m3u8Url, name) {
     
     const originalUrl = getOriginalLink(m3u8Url); 
+    
     const playerContainer = document.getElementById("playerContainer");
     const channelLabel = document.getElementById("currentChannelLabel");
     
@@ -603,54 +599,85 @@
         return;
     }
 
-    // 1. تدمير المشغل السابق إذا وجد
-    if (player) {
-        player.destroy();
-        player = null;
+    if (currentHls) {
+        currentHls.destroy();
+        currentHls = null;
     }
 
-    // 2. إعداد الحاوية للمشغل الجديد
-    // نقوم بمسح محتوى الـ playerContainer (إزالة الـ placeholder) وإنشاء div جديد للمشغل
-    playerContainer.innerHTML = '<div id="clappr-player" class="player-wrapper"></div>';
+    // إزالة Placeholder إذا كان موجودًا
+    const playerPlaceholder = document.getElementById("playerPlaceholder");
+    if (playerPlaceholder) {
+        playerPlaceholder.remove();
+    }
 
-    // 3. إنشاء مشغل Clappr جديد
-    player = new Clappr.Player({
-        source: originalUrl,
-        parentId: "#clappr-player",
-        width: '100%',
-        height: '100%',
-        autoPlay: true,
-        playback: {
-             playInline: true, // مهم لتشغيل الفيديو داخل الصفحة في الآيفون
-             recycleVideo: Clappr.Browser.isMobile, // تحسين الأداء على الهاتف
-        },
-        events: {
-            onError: function(e) {
-                console.error("Clappr Error:", e);
-                playerContainer.innerHTML = `<div class="text-red-400 text-center p-4 flex flex-col items-center justify-center h-full w-full">
-                    <p>عذراً، حدث خطأ في البث.</p>
-                    <p class="text-xs text-slate-500 mt-2">قد تكون القناة غير متاحة حالياً.</p>
-                </div>`;
-            }
-        }
-    });
 
-    // 4. تحديث اسم القناة والواجهة
-    // بما أننا قمنا بمسح الـ HTML الداخلي لـ playerContainer، نحتاج لتحديث النص في مكان آخر أو تجاهله
-    // في التصميم الحالي، اسم القناة يظهر داخل الـ Placeholder الذي تم مسحه.
-    // لذا سنكتفي بتحديث الحالة النشطة للبطاقات.
+    // إنشاء عنصر الفيديو
+    playerContainer.innerHTML = `
+      <video id="videoPlayer" class="w-full h-full rounded-xl border-0" controls autoplay playsinline></video>
+    `;
+    const video = document.getElementById('videoPlayer');
     
-    // تحديث حالة البطاقات (Active Class)
+    // دالة لطلب وضع ملء الشاشة (Fullscreen)
+    function requestFullscreen() {
+        // محاولة طلب ملء الشاشة على عنصر الفيديو نفسه أو حاويته
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.webkitEnterFullscreen) { // ⭐️ هذه الطريقة هي الأكثر شيوعاً لـ iOS MediaElement
+            video.webkitEnterFullscreen();
+        } else if (video.webkitRequestFullscreen) { /* Safari (Modern) */
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) { /* IE11 */
+            video.msRequestFullscreen();
+        }
+    }
+
+    // 2. محرك التشغيل المتوافق مع كل الأجهزة
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // ⭐️ المسار الأمثل لأجهزة iOS (iPhone/iPad)
+      video.src = originalUrl;
+      video.addEventListener('loadedmetadata', function() {
+        // يتم طلب ملء الشاشة بعد نجاح التشغيل
+        video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked on iOS:', e));
+      });
+    } else if (Hls.isSupported()) {
+      // المسار الأمثل لأجهزة أندرويد والكمبيوتر (باستخدام HLS.js)
+      var hls = new Hls();
+      currentHls = hls; 
+      hls.loadSource(originalUrl);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        // يتم طلب ملء الشاشة بعد نجاح التشغيل
+        video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked:', e));
+      });
+      // معالجة الأخطاء (اختياري)
+      hls.on(Hls.Events.ERROR, function (event, data) {
+          if (data.fatal) {
+              console.error('HLS Fatal Error:', data.details, data.type);
+              playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، حدث خطأ في البث: ${data.details}. قد تكون القناة غير متاحة حالياً.</div>`;
+              document.getElementById("currentChannelLabel").textContent = 'خطأ في البث';
+              if (currentHls) {
+                  currentHls.destroy();
+                  currentHls = null;
+              }
+          }
+      });
+    } else {
+        playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، متصفحك لا يدعم تشغيل هذا النوع من البث المباشر (HLS).</div>`;
+    }
+
+    // 3. تحديث واجهة المستخدم
+    if (channelLabel) {
+      channelLabel.textContent = name;
+    }
+    
     const allChannelCards = document.querySelectorAll('.channel-card-clickable');
     allChannelCards.forEach(card => card.classList.remove('channel-card-active'));
     
+    // ملاحظة: قد تحتاج إلى تحديث طريقة تحديد البطاقة النشطة إذا كان هناك قنوات بنفس الـ id في سيرفرات مختلفة
     const clickedCard = Array.from(allChannelCards).find(card => card.dataset.id == id);
     if(clickedCard) {
         clickedCard.classList.add('channel-card-active');
     }
-    
-    // (اختياري) إذا أردت إظهار اسم القناة تحت المشغل، يمكنك إضافة عنصر HTML ثابت خارج playerContainer وتحديثه هنا.
-    // ولكن الكود الحالي يظهر الاسم فقط في وضع الانتظار (Placeholder).
   }
   
   function shareSite() {
