@@ -631,9 +631,16 @@
         }
     }
 
-    // 2. محرك التشغيل الموحد (الآن سيعتمد على HLS.js بشكل أساسي)
-    if (Hls.isSupported()) {
-      // المسار الموحد لأجهزة أندرويد والكمبيوتر و iOS (باستخدام HLS.js)
+    // 2. محرك التشغيل المتوافق مع كل الأجهزة
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // ⭐️ المسار الأمثل لأجهزة iOS (iPhone/iPad)
+      video.src = originalUrl;
+      video.addEventListener('loadedmetadata', function() {
+        // يتم طلب ملء الشاشة بعد نجاح التشغيل
+        video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked on iOS:', e));
+      });
+    } else if (Hls.isSupported()) {
+      // المسار الأمثل لأجهزة أندرويد والكمبيوتر (باستخدام HLS.js)
       var hls = new Hls();
       currentHls = hls; 
       hls.loadSource(originalUrl);
@@ -654,17 +661,41 @@
               }
           }
       });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // ⭐️ كمسار احتياطي لـ iOS في حال لم يتمكن HLS.js من العمل (وهو نادر)
-        video.src = originalUrl;
-        video.addEventListener('loadedmetadata', function() {
-          video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked on iOS:', e));
-        });
     } else {
         playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، متصفحك لا يدعم تشغيل هذا النوع من البث المباشر (HLS).</div>`;
     }
 
-
     // 3. تحديث واجهة المستخدم
     if (channelLabel) {
       channelLabel.textContent = name;
+    }
+    
+    const allChannelCards = document.querySelectorAll('.channel-card-clickable');
+    allChannelCards.forEach(card => card.classList.remove('channel-card-active'));
+    
+    // ملاحظة: قد تحتاج إلى تحديث طريقة تحديد البطاقة النشطة إذا كان هناك قنوات بنفس الـ id في سيرفرات مختلفة
+    const clickedCard = Array.from(allChannelCards).find(card => card.dataset.id == id);
+    if(clickedCard) {
+        clickedCard.classList.add('channel-card-active');
+    }
+  }
+  
+  function shareSite() {
+      const shareData = {
+          title: 'Rahomi TV',
+          text: 'شاهد القنوات الرياضية.',
+          url: window.location.href
+      };
+
+      if (navigator.share) {
+          navigator.share(shareData).catch(error => console.log('Error sharing', error));
+      } else {
+          navigator.clipboard.writeText(shareData.url).then(() => {
+             alert(`تم نسخ رابط الموقع بنجاح! شاركه لتعم الفائدة: ${shareData.url}`);
+          });
+      }
+  }
+</script>
+
+</body>
+</html>
