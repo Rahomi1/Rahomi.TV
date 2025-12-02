@@ -52,7 +52,8 @@
     }
     #playerContainer { 
         position: relative; 
-        overflow: hidden; /* مهم لـ Clappr */
+        overflow: hidden; /* ضروري لعمل Clappr بشكل صحيح */
+        z-index: 10;
     }
     .player-header {
         display: flex;
@@ -135,6 +136,7 @@
                 Rahomi TV
               </h1>
           </div>
+          
           <div
             id="playerContainer"
             class="relative w-full aspect-video rounded-xl bg-black border border-slate-800 shadow-inner flex items-center justify-center text-slate-400">
@@ -225,7 +227,6 @@
   </main>
 
   <script>
-  // ⭐️ تغيير المتغير الخاص بالمشغل ليكون currentPlayer بدلاً من currentHls
   let currentPlayer = null;
   const CORRECT_CODE = "1212"; 
   let isLoggedIn = true; 
@@ -313,7 +314,7 @@
           channelListContainer.innerHTML += createChannelCard(channel);
       });
 
-      // ⭐️ إيقاف مشغل Clappr إذا كان موجوداً ⭐️
+      // إيقاف المشغل الحالي
       if (currentPlayer) {
           currentPlayer.destroy();
           currentPlayer = null;
@@ -370,7 +371,7 @@
       switchServer(activeServer); 
   };
 
-  // ⭐️ دالة تشغيل القناة باستخدام Clappr ⭐️
+  // ⭐️ دالة التشغيل المتوافقة مع الآيفون ⭐️
   function playChannel(id, m3u8Url, name) {
     
     const originalUrl = getOriginalLink(m3u8Url); 
@@ -382,33 +383,38 @@
         return;
     }
 
-    // 1. تنظيف المشغل القديم إذا وجد
     if (currentPlayer) {
         currentPlayer.destroy();
         currentPlayer = null;
     }
 
-    // 2. إزالة محتويات الحاوية (بما في ذلك Placeholder)
+    // تنظيف الحاوية
     playerContainer.innerHTML = '';
 
-    // 3. إعداد مشغل Clappr
+    // إعداد مشغل Clappr مع خيارات iOS
     currentPlayer = new Clappr.Player({
         source: originalUrl,
         parentId: "#playerContainer",
         autoPlay: true,
         width: '100%',
         height: '100%',
-        // يمكنك إضافة خيارات أخرى هنا مثل الألوان
+        
+        // ⭐️ الإصلاح الضروري لتكبير الفيديو في الآيفون ⭐️
+        playback: {
+            playInline: true,
+            recycleVideo: true,
+        },
+        
         mediacontrol: {seekbar: "#38bdf8", buttons: "#fff"},
+        
         events: {
             onError: function(e) {
                 console.error("Clappr Error:", e);
-                // يمكن إضافة معالجة للأخطاء هنا
+                // يمكن إضافة كود لإظهار رسالة خطأ للمستخدم هنا
             }
         }
     });
 
-    // 4. تحديث واجهة المستخدم
     if (channelLabel) {
       channelLabel.textContent = name;
     }
@@ -438,9 +444,7 @@
       }
   }
   
-  // دالة وهمية للتحقق من الكود (إذا كانت مطلوبة)
   function checkCode() {
-     // نفس منطق الكود السابق إذا كنت تستخدمه
      const input = document.getElementById('passCodeInput');
      const msg = document.getElementById('message');
      if(input.value === CORRECT_CODE) {
