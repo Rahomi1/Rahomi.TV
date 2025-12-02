@@ -6,10 +6,9 @@
   <title>Rahomi TV</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght=700&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
 
   <style>
     body {
@@ -22,7 +21,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      /* ⭐️ نمط لمنع تحديد النص على جميع المتصفحات */
       -webkit-user-select: none; 
       -ms-user-select: none; 
       user-select: none; 
@@ -47,32 +45,32 @@
       background: radial-gradient(circle at 0% 0%, rgba(56,189,248,0.15), rgba(15,23,42,0.92));
       border-color: #38bdf8;
     }
-    /* ⭐️ تم تصغير نمط الزر النشط ⭐️ */
     .server-button-active {
-        background-color: #0c4a6e; /* sky-800 */
-        border-color: #38bdf8; /* sky-400 */
+        background-color: #0c4a6e;
+        border-color: #38bdf8;
         box-shadow: 0 0 5px rgba(56,189,248,0.5);
     }
-    #playerContainer { position: relative; }
-    #videoPlayer { min-height: 250px; } 
+    #playerContainer { 
+        position: relative; 
+        overflow: hidden; /* مهم لـ Clappr */
+    }
     .player-header {
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
     }
-    /* ⭐️ نمط جديد لشعار القناة ⭐️ */
     .channel-logo-container {
       position: relative;
       width: 40px;
       height: 40px;
-      border-radius: 8px; /* نفس شكل الحاوية */
-      overflow: hidden; /* لمنع الصورة من الخروج */
+      border-radius: 8px;
+      overflow: hidden;
     }
     .channel-logo-image {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* للتأكد من أن الصورة تغطي المساحة دون تشويه */
+      object-fit: cover;
     }
   </style>
 </head>
@@ -80,21 +78,18 @@
 <body class="text-slate-100">
 
   <script>
-    // 1. منع استخدام مفاتيح فحص العناصر والمطورين (F12, Ctrl+Shift+I, إلخ)
     document.onkeydown = function(e) {
-      // منع مفاتيح المطورين والقص والنسخ واللصق
       if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
         return false;
       }
       if (e.ctrlKey && (e.key === 'c' || e.key === 'x')) {
-          e.preventDefault(); // منع النسخ والقص
+          e.preventDefault();
       }
     };
-    // 2. منع النقر بالزر الأيمن للموس ومنع تحديد ونسخ النص
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.addEventListener('selectstart', event => event.preventDefault()); 
-    document.addEventListener('copy', event => event.preventDefault()); // منع عملية النسخ نفسها
-    document.addEventListener('cut', event => event.preventDefault()); // منع عملية القص
+    document.addEventListener('copy', event => event.preventDefault());
+    document.addEventListener('cut', event => event.preventDefault());
   </script>
 
   <div id="loginPage" class="hidden w-full h-screen fixed top-0 left-0 z-50 flex items-center justify-center backdrop-blur-sm bg-gray-900/80">
@@ -230,21 +225,20 @@
   </main>
 
   <script>
-  let currentHls = null;
+  // ⭐️ تغيير المتغير الخاص بالمشغل ليكون currentPlayer بدلاً من currentHls
+  let currentPlayer = null;
   const CORRECT_CODE = "1212"; 
   let isLoggedIn = true; 
   
-  // ⭐️ بيانات القنوات (تم حذف server3) ⭐️
   const CHANNELS = {
       'server1': [
-          // ⭐️ ملاحظة: يمكنك وضع رابط صورة القناة المباشر في logoUrl
           {id: 1, name: 'الرياضية 1', url: 'https://ab.footballii.ir/hls2/bein1_src.m3u8', color: 'sky', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 2, name: 'الرياضية 2', url: 'https://stream.supertv.gg:3002/supertv/sport/stv2/ch2/adaptive.m3u8', color: 'red', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 3, name: 'الرياضية 3', url: 'https://stream.supertv.gg:3003/supertv/sport/stv3/ch3/adaptive.m3u8', color: 'emerald', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 4, name: 'الرياضية 4', url: 'https://stream.supertv.gg:3004/supertv/sport/stv4/ch4/adaptive.m3u8', color: 'yellow', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 5, name: 'الرياضية 5', url: 'https://stream.supertv.gg:3005/supertv/sport/stv5/ch5/adaptive.m3u8', color: 'purple', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 6, name: 'الرياضية 6', url: 'https://stream.supertv.gg:3006/supertv/sport/stv6/ch6/adaptive.m3u8', color: 'pink', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 7, name: 'الرياضية 7', url: 'https://stream.supertv.gg:3007/supertv/sport/stv7/ch7/adaptive.m3u8', color: 'orange', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'}, // لا يوجد رابط صورة، سيستخدم الأيقونة الافتراضية
+          {id: 7, name: 'الرياضية 7', url: 'https://stream.supertv.gg:3007/supertv/sport/stv7/ch7/adaptive.m3u8', color: 'orange', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
       ],
       'server2': [
           {id: 8, name: 'الرياضة العالمية 1', url: 'https://stream.veo.buzz:6072/sport/ch1/adaptive.m3u8', color: 'indigo', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
@@ -252,32 +246,15 @@
           {id: 10, name: 'الرياضة العالمية 3', url: 'https://stream.veo.buzz:6074/sport/ch3/adaptive.m3u8', color: 'fuchsia', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
           {id: 11, name: 'الرياضة العالمية 4', url: 'https://stream.veo.buzz:6075/sport/ch4/adaptive.m3u8', color: 'gray', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
           {id: 12, name: 'الرياضة العالمية 5', url: 'https://stream.veo.buzz:6076/sport/ch5/adaptive.m3u8', color: 'amber', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
-      ],
-      /*
-      'server3': [
-          {id: 15, name: 'فايبر اكس وكويك نت 1', url: 'http://45.67.56.78/Sport1/tracks-v1a1/mono.m3u8', color: 'green', logoUrl: ''},
-          {id: 16, name: 'فايبر اكس وكويك نت 2', url: 'http://45.67.56.78/Sport2/tracks-v1a1/mono.m3u8', color: 'blue', logoUrl: ''},
-          {id: 17, name: 'فايبر اكس وكويك نت 3', url: 'http://45.67.56.78/Sport3/tracks-v1a1/mono.m3u8', color: 'purple', logoUrl: ''},
-          {id: 18, name: 'فايبر اكس وكويك نت 4', url: 'http://45.67.56.78/Sport4/tracks-v1a1/mono.m3u8', color: 'pink', logoUrl: ''},
-          {id: 19, name: 'فايبر اكس وكويك نت 5', url: 'http://45.67.56.78/Sport5/tracks-v1a1/mono.m3u8', color: 'yellow', logoUrl: ''},
-          {id: 20, name: 'فايبر اكس وكويك نت 6', url: 'http://45.67.56.78/Sport6/tracks-v1a1/mono.m3u8', color: 'orange', logoUrl: ''},
-          {id: 21, name: 'فايبر اكس وكويك نت 7', url: 'http://45.67.56.78/Sport7/tracks-v1a1/mono.m3u8', color: 'teal', logoUrl: ''},
-      ],
-      */
+      ]
   };
 
-  let activeServer = 'server1'; // السيرفر النشط الافتراضي
+  let activeServer = 'server1';
 
-  // دالة مساعدة لتوليد كود HTML لبطاقة القناة
   function createChannelCard(channel) {
-      // ⭐️ الأيقونة الافتراضية (SVG) في حال عدم توفر رابط صورة ⭐️
       const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-${channel.color}-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>`;
-      
       let logoContent;
-
       if (channel.logoUrl && channel.logoUrl.trim() !== '') {
-          // إذا كان هناك رابط شعار، استخدم وسم <img>
-          // onError لإرجاع الأيقونة الافتراضية في حال فشل تحميل الصورة
           logoContent = `
               <img 
                   src="${channel.logoUrl}" 
@@ -287,10 +264,8 @@
               >
           `;
       } else {
-          // إذا لم يكن هناك رابط، استخدم أيقونة SVG الافتراضية
           logoContent = fallbackSvg;
       }
-
 
       return `
           <div 
@@ -312,18 +287,11 @@
       `;
   }
   
-  /**
-   * تبديل السيرفر وعرض القنوات التابعة له.
-   * @param {string} serverId - مُعرف السيرفر (مثل 'server1', 'server2').
-   */
   function switchServer(serverId) {
-      // ⭐️ تم إضافة فحص للتأكد من وجود السيرفر قبل المعالجة ⭐️
       if (!CHANNELS[serverId]) {
         console.warn(`Server ID ${serverId} not found.`);
-        // إذا كان السيرفر المحذوف هو النشط، نعود للسيرفر الافتراضي
         if (serverId === activeServer && serverId !== 'server1') {
             activeServer = 'server1';
-            // نواصل تنفيذ الدالة مع السيرفر الجديد
         } else {
             return; 
         }
@@ -333,7 +301,6 @@
       const channelListContainer = document.getElementById('channelList');
       const serverButtons = document.querySelectorAll('.server-button');
       
-      // 1. تحديث شكل زر السيرفر النشط
       serverButtons.forEach(btn => {
           btn.classList.remove('server-button-active');
           if (btn.dataset.serverId === serverId) {
@@ -341,26 +308,20 @@
           }
       });
 
-      // 2. عرض القنوات الخاصة بالسيرفر
-      channelListContainer.innerHTML = ''; // تفريغ القائمة الحالية
+      channelListContainer.innerHTML = ''; 
       CHANNELS[serverId].forEach(channel => {
           channelListContainer.innerHTML += createChannelCard(channel);
       });
 
-      // 3. إيقاف البث الحالي وعرض الرسالة الافتراضية
-      if (currentHls) {
-          currentHls.destroy();
-          currentHls = null;
+      // ⭐️ إيقاف مشغل Clappr إذا كان موجوداً ⭐️
+      if (currentPlayer) {
+          currentPlayer.destroy();
+          currentPlayer = null;
       }
-      const playerContainer = document.getElementById("playerContainer");
-      const playerPlaceholder = document.getElementById("playerPlaceholder");
       
-      if (playerPlaceholder) {
-        // إذا كان عنصر الـ Placeholder موجودًا بالفعل (أي لا يوجد فيديو قيد التشغيل)
-        playerPlaceholder.style.display = 'flex';
-      } else {
-        // إذا كان هناك فيديو قيد التشغيل، قم بإنشاء الـ Placeholder مرة أخرى
-        playerContainer.innerHTML = `
+      const playerContainer = document.getElementById("playerContainer");
+      // إعادة إنشاء الـ Placeholder
+      playerContainer.innerHTML = `
           <div id="playerPlaceholder" class="flex flex-col items-center gap-3 px-4 text-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <circle cx="12" cy="12" r="9" stroke-width="1.4"></circle>
@@ -375,8 +336,7 @@
               </p>
             </div>
           </div>
-        `;
-      }
+      `;
 
       document.getElementById("currentChannelLabel").textContent = 'لم يتم الاختيار';
       document.querySelectorAll('.channel-card-clickable').forEach(card => card.classList.remove('channel-card-active'));
@@ -384,7 +344,6 @@
 
 
   function getOriginalLink(link) {
-    // تم تبسيط الدالة
     if (link.includes('alternative.server')) {
         return 'INVALID_LINK';
     }
@@ -407,93 +366,49 @@
   }
   
   window.onload = function() {
-      // ⭐️ عند تحميل الصفحة، قم بعرض قنوات السيرفر الافتراضي ⭐️
       togglePages(true); 
       switchServer(activeServer); 
   };
 
-  /**
-   * تشغيل قناة البث المباشر وطلب وضع ملء الشاشة.
-   */
+  // ⭐️ دالة تشغيل القناة باستخدام Clappr ⭐️
   function playChannel(id, m3u8Url, name) {
     
     const originalUrl = getOriginalLink(m3u8Url); 
-    
     const playerContainer = document.getElementById("playerContainer");
     const channelLabel = document.getElementById("currentChannelLabel");
     
     if (originalUrl === 'INVALID_LINK') {
-        alert('يرجى وضع رابط بث حقيقي للقناة في هذا السيرفر أولاً حتى يعمل البث. هذا الرابط مجرد مثال.');
+        alert('يرجى وضع رابط بث حقيقي للقناة في هذا السيرفر أولاً حتى يعمل البث.');
         return;
     }
 
-    if (currentHls) {
-        currentHls.destroy();
-        currentHls = null;
+    // 1. تنظيف المشغل القديم إذا وجد
+    if (currentPlayer) {
+        currentPlayer.destroy();
+        currentPlayer = null;
     }
 
-    // إزالة Placeholder إذا كان موجودًا
-    const playerPlaceholder = document.getElementById("playerPlaceholder");
-    if (playerPlaceholder) {
-        playerPlaceholder.remove();
-    }
+    // 2. إزالة محتويات الحاوية (بما في ذلك Placeholder)
+    playerContainer.innerHTML = '';
 
-
-    // إنشاء عنصر الفيديو
-    playerContainer.innerHTML = `
-      <video id="videoPlayer" class="w-full h-full rounded-xl border-0" controls autoplay playsinline></video>
-    `;
-    const video = document.getElementById('videoPlayer');
-    
-    // دالة لطلب وضع ملء الشاشة (Fullscreen)
-    function requestFullscreen() {
-        // محاولة طلب ملء الشاشة على عنصر الفيديو نفسه أو حاويته
-        if (video.requestFullscreen) {
-            video.requestFullscreen();
-        } else if (video.webkitEnterFullscreen) { // ⭐️ هذه الطريقة هي الأكثر شيوعاً لـ iOS MediaElement
-            video.webkitEnterFullscreen();
-        } else if (video.webkitRequestFullscreen) { /* Safari (Modern) */
-            video.webkitRequestFullscreen();
-        } else if (video.msRequestFullscreen) { /* IE11 */
-            video.msRequestFullscreen();
+    // 3. إعداد مشغل Clappr
+    currentPlayer = new Clappr.Player({
+        source: originalUrl,
+        parentId: "#playerContainer",
+        autoPlay: true,
+        width: '100%',
+        height: '100%',
+        // يمكنك إضافة خيارات أخرى هنا مثل الألوان
+        mediacontrol: {seekbar: "#38bdf8", buttons: "#fff"},
+        events: {
+            onError: function(e) {
+                console.error("Clappr Error:", e);
+                // يمكن إضافة معالجة للأخطاء هنا
+            }
         }
-    }
+    });
 
-    // 2. محرك التشغيل المتوافق مع كل الأجهزة
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // ⭐️ المسار الأمثل لأجهزة iOS (iPhone/iPad)
-      video.src = originalUrl;
-      video.addEventListener('loadedmetadata', function() {
-        // يتم طلب ملء الشاشة بعد نجاح التشغيل
-        video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked on iOS:', e));
-      });
-    } else if (Hls.isSupported()) {
-      // المسار الأمثل لأجهزة أندرويد والكمبيوتر (باستخدام HLS.js)
-      var hls = new Hls();
-      currentHls = hls; 
-      hls.loadSource(originalUrl);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, function() {
-        // يتم طلب ملء الشاشة بعد نجاح التشغيل
-        video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked:', e));
-      });
-      // معالجة الأخطاء (اختياري)
-      hls.on(Hls.Events.ERROR, function (event, data) {
-          if (data.fatal) {
-              console.error('HLS Fatal Error:', data.details, data.type);
-              playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، حدث خطأ في البث: ${data.details}. قد تكون القناة غير متاحة حالياً.</div>`;
-              document.getElementById("currentChannelLabel").textContent = 'خطأ في البث';
-              if (currentHls) {
-                  currentHls.destroy();
-                  currentHls = null;
-              }
-          }
-      });
-    } else {
-        playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، متصفحك لا يدعم تشغيل هذا النوع من البث المباشر (HLS).</div>`;
-    }
-
-    // 3. تحديث واجهة المستخدم
+    // 4. تحديث واجهة المستخدم
     if (channelLabel) {
       channelLabel.textContent = name;
     }
@@ -501,7 +416,6 @@
     const allChannelCards = document.querySelectorAll('.channel-card-clickable');
     allChannelCards.forEach(card => card.classList.remove('channel-card-active'));
     
-    // ملاحظة: قد تحتاج إلى تحديث طريقة تحديد البطاقة النشطة إذا كان هناك قنوات بنفس الـ id في سيرفرات مختلفة
     const clickedCard = Array.from(allChannelCards).find(card => card.dataset.id == id);
     if(clickedCard) {
         clickedCard.classList.add('channel-card-active');
@@ -522,6 +436,18 @@
              alert(`تم نسخ رابط الموقع بنجاح! شاركه لتعم الفائدة: ${shareData.url}`);
           });
       }
+  }
+  
+  // دالة وهمية للتحقق من الكود (إذا كانت مطلوبة)
+  function checkCode() {
+     // نفس منطق الكود السابق إذا كنت تستخدمه
+     const input = document.getElementById('passCodeInput');
+     const msg = document.getElementById('message');
+     if(input.value === CORRECT_CODE) {
+         togglePages(true);
+     } else {
+         msg.textContent = "رمز خاطئ!";
+     }
   }
 </script>
 
