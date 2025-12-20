@@ -180,6 +180,14 @@
                   >
                      قنوات عالمية
                   </button>
+                  <button 
+                      onclick="switchServer('server3')"
+                      id="btn-server3"
+                      class="py-0.5 px-2 text-xs font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
+                      data-server-id="server3"
+                  >
+                     قنوات ألوان
+                  </button>
                   </div>
           </div>
           <div class="mt-3 flex items-center justify-center text-center">
@@ -234,36 +242,33 @@
   const CORRECT_CODE = "1212"; 
   let isLoggedIn = true; 
   
-  // ⭐️ بيانات القنوات (تم حذف server3) ⭐️
+  // ⭐️ بيانات القنوات (تم تعديل server3 ليكون 6 قنوات) ⭐️
   const CHANNELS = {
       'server1': [
-          // ⭐️ ملاحظة: يمكنك وضع رابط صورة القناة المباشر في logoUrl
           {id: 1, name: 'الرياضية 1', url: 'https://ab.footballii.ir/hls2/bein1.m3u8', color: 'sky', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 2, name: 'الرياضية 2', url: 'https://ab.footballii.ir/hls2/bein2.m3u8', color: 'red', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 3, name: 'الرياضية 3', url: 'https://py.dencreak.com/bn_g_hd3.m3u8', color: 'emerald', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 4, name: 'الرياضية 4', url: 'https://py.dencreak.com/bn_g_hd4.m3u8', color: 'yellow', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 5, name: 'الرياضية 5', url: 'https://py.dencreak.com/bn_g_hd5.m3u8', color: 'purple', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 6, name: 'الرياضية 6', url: 'https://py.dencreak.com/bn_g_hd6.m3u8', color: 'pink', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 7, name: 'الرياضية 7', url: 'https://py.dencreak.com/bn_g_hd7.m3u8', color: 'orange', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'}, // لا يوجد رابط صورة، سيستخدم الأيقونة الافتراضية
+          {id: 7, name: 'الرياضية 7', url: 'https://py.dencreak.com/bn_g_hd7.m3u8', color: 'orange', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'}, 
       ],
       'server2': [
-          {id: 8, name: 'الرياضة العالمية 1', url: 'https://player.restream.io/?token=00bf72d1fdf04c07b0388ae411ed2e98', color: 'indigo', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
+          {id: 8, name: 'الرياضة العالمية 1', url: 'https://stream.veo.buzz:6072/sport/ch1/adaptive.m3u8', color: 'indigo', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
           {id: 9, name: 'الرياضة العالمية 2', url: 'https://stream.veo.buzz:6073/sport/ch2/adaptive.m3u8', color: 'teal', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
           {id: 10, name: 'الرياضة العالمية 3', url: 'https://stream.veo.buzz:6074/sport/ch3/adaptive.m3u8', color: 'fuchsia', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
           {id: 11, name: 'الرياضة العالمية 4', url: 'https://stream.veo.buzz:6075/sport/ch4/adaptive.m3u8', color: 'gray', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
           {id: 12, name: 'الرياضة العالمية 5', url: 'https://stream.veo.buzz:6076/sport/ch5/adaptive.m3u8', color: 'amber', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
       ],
-      /*
       'server3': [
-          {id: 15, name: 'فايبر اكس وكويك نت 1', url: 'http://45.67.56.78/Sport1/tracks-v1a1/mono.m3u8', color: 'green', logoUrl: ''},
-          {id: 16, name: 'فايبر اكس وكويك نت 2', url: 'http://45.67.56.78/Sport2/tracks-v1a1/mono.m3u8', color: 'blue', logoUrl: ''},
-          {id: 17, name: 'فايبر اكس وكويك نت 3', url: 'http://45.67.56.78/Sport3/tracks-v1a1/mono.m3u8', color: 'purple', logoUrl: ''},
-          {id: 18, name: 'فايبر اكس وكويك نت 4', url: 'http://45.67.56.78/Sport4/tracks-v1a1/mono.m3u8', color: 'pink', logoUrl: ''},
-          {id: 19, name: 'فايبر اكس وكويك نت 5', url: 'http://45.67.56.78/Sport5/tracks-v1a1/mono.m3u8', color: 'yellow', logoUrl: ''},
-          {id: 20, name: 'فايبر اكس وكويك نت 6', url: 'http://45.67.56.78/Sport6/tracks-v1a1/mono.m3u8', color: 'orange', logoUrl: ''},
-          {id: 21, name: 'فايبر اكس وكويك نت 7', url: 'http://45.67.56.78/Sport7/tracks-v1a1/mono.m3u8', color: 'teal', logoUrl: ''},
+          // ⭐️ تم تعديل هذا القسم ليشمل 6 قنوات ⭐️
+          {id: 13, name: 'الوان 1', url: 'https://py.dencreak.com/alwan_hd1.m3u8', color: 'rose', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
+          {id: 14, name: 'الوان 2', url: 'https://py.dencreak.com/alwan_hd2.m3u8', color: 'cyan', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
+          {id: 15, name: 'الوان 3', url: 'https://py.dencreak.com/alwan_hd3.m3u8', color: 'lime', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
+          {id: 16, name: 'الوان 4', url: 'https://py.dencreak.com/alwan_hd4.m3u8', color: 'violet', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
+          {id: 17, name: 'الوان 5', url: 'https://py.dencreak.com/alwan_hd5.m3u8', color: 'orange', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
+          {id: 18, name: 'الوان 6', url: 'https://py.dencreak.com/alwan_hd6.m3u8', color: 'emerald', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
       ],
-      */
   };
 
   let activeServer = 'server1'; // السيرفر النشط الافتراضي
@@ -422,8 +427,8 @@
     const playerContainer = document.getElementById("playerContainer");
     const channelLabel = document.getElementById("currentChannelLabel");
     
-    if (originalUrl === 'INVALID_LINK') {
-        alert('يرجى وضع رابط بث حقيقي للقناة في هذا السيرفر أولاً حتى يعمل البث. هذا الرابط مجرد مثال.');
+    if (originalUrl === 'INVALID_LINK' || originalUrl === '') {
+        alert('لا يوجد رابط بث لهذه القناة حالياً.');
         return;
     }
 
