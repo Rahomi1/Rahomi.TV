@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rahomi TV</title>
+  <title>GO TV MAX</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght=700&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <!-- ⭐️ تم إضافة مشغل Video.js الاحترافي ⭐️ -->
+  <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 
   <style>
     body {
@@ -74,6 +76,20 @@
       height: 100%;
       object-fit: cover; /* للتأكد من أن الصورة تغطي المساحة دون تشويه */
     }
+    
+    /* ⭐️ تخصيص مشغل Video.js ليتناسب مع تصميمك ⭐️ */
+    .video-js {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        border-radius: 0.75rem; 
+        overflow: hidden;
+    }
+    .video-js .vjs-tech {
+        border-radius: 0.75rem;
+    }
   </style>
 </head>
 
@@ -100,7 +116,7 @@
   <div id="loginPage" class="hidden w-full h-screen fixed top-0 left-0 z-50 flex items-center justify-center backdrop-blur-sm bg-gray-900/80">
       <div class="login-card rounded-2xl p-6 md:p-8 shadow-2xl max-w-sm w-full space-y-6">
         <h1 class="text-3xl font-bold text-center text-sky-400">
-          Rahomi TV
+          GO TV MAX
         </h1>
         <p class="text-center text-slate-400 text-sm font-semibold">
           بث مباشر للقنوات الرياضية والعالمية مجاناً
@@ -137,7 +153,7 @@
           
           <div class="player-header mb-4">
               <h1 class="player-title title-font text-2xl font-bold text-sky-200">
-                Rahomi TV
+                GO TV MAX
               </h1>
           </div>
           <div
@@ -170,29 +186,13 @@
                       class="py-0.5 px-2 text-xs font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button server-button-active"
                       data-server-id="server1"
                   >
-                      قنوات رياضية
+                      كأس العالم 2026
                   </button>
-                  <button 
-                      onclick="switchServer('server2')"
-                      id="btn-server2"
-                      class="py-0.5 px-2 text-xs font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
-                      data-server-id="server2"
-                  >
-                     قنوات عالمية
-                  </button>
-                  <button 
-                      onclick="switchServer('server3')"
-                      id="btn-server3"
-                      class="py-0.5 px-2 text-xs font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button"
-                      data-server-id="server3"
-                  >
-                     قنوات ألوان
-                  </button>
-                  </div>
+                  
+              </div>
              
-             </span>
           </div>
-          </div>
+        </div>
       </section>
 
       <aside class="space-y-6 xl:col-span-1 order-2 xl:order-none">
@@ -203,7 +203,7 @@
           </h2>
 
           <div class="flex flex-col gap-3" id="channelList">
-            </div>
+          </div>
         </div>
         
         <div class="glass rounded-2xl p-4 md:p-5 shadow-xl border-sky-400/50">
@@ -235,11 +235,10 @@
   </main>
 
   <script>
-  let currentHls = null;
+  let myPlayer = null; // متغير مشغل Video.js
   const CORRECT_CODE = "1212"; 
   let isLoggedIn = true; 
   
-  // ⭐️ بيانات القنوات (تم تعديل server3 ليكون 6 قنوات) ⭐️
   const CHANNELS = {
       'server1': [
           {id: 1, name: 'الرياضية 1', url:'https://little-hat-a208.gotvmax0.workers.dev/.m3u8', color: 'sky', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
@@ -249,37 +248,17 @@
           {id: 5, name: 'الرياضية 5', url: 'https://stream.supertv.gg:3005/supertv/sport/stv5/ch5/adaptive.m3u8', color: 'purple', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 6, name: 'الرياضية 6', url: 'https://stream.supertv.gg:3006/supertv/sport/stv6/ch6/adaptive.m3u8', color: 'pink', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
           {id: 7, name: 'الرياضية 7', url: 'https://stream.supertv.gg:3007/supertv/sport/stv7/ch7/adaptive.m3u8', color: 'orange', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'}, 
-      ],
-      'server2': [
-          {id: 8, name: 'الرياضة العالمية 1', url: 'https://stream.veo.buzz:6072/sport/ch1/adaptive.m3u8', color: 'indigo', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
-          {id: 9, name: 'الرياضة العالمية 2', url: 'https://stream.veo.buzz:6073/sport/ch2/adaptive.m3u8', color: 'teal', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
-          {id: 10, name: 'الرياضة العالمية 3', url: 'https://stream.veo.buzz:6074/sport/ch3/adaptive.m3u8', color: 'fuchsia', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
-          {id: 11, name: 'الرياضة العالمية 4', url: 'https://stream.veo.buzz:6075/sport/ch4/adaptive.m3u8', color: 'gray', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
-          {id: 12, name: 'الرياضة العالمية 5', url: 'https://stream.veo.buzz:6076/sport/ch5/adaptive.m3u8', color: 'amber', logoUrl: 'https://h.top4top.io/p_3613uda6f0.png'},
-      ],
-      'server3': [
-          // ⭐️ تم تعديل هذا القسم ليشمل 6 قنوات ⭐️
-          {id: 13, name: 'الوان 1', url: 'https://py.denceak.com/alwan_hd1.m3u8', color: 'rose', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
-          {id: 14, name: 'الوان 2', url: 'https://py.dencreak.com/alwan_hd2.m3u8', color: 'cyan', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
-          {id: 15, name: 'الوان 3', url: 'https://py.dencreak.com/alwan_hd3.m3u8', color: 'lime', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
-          {id: 16, name: 'الوان 4', url: 'https://py.dencreak.com/alwan_hd4.m3u8', color: 'violet', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
-          {id: 17, name: 'الوان 5', url: 'https://py.dencreak.com/alwan_hd5.m3u8', color: 'orange', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
-          {id: 18, name: 'الوان 6', url: 'https://py.dencreak.com/alwan_hd6.m3u8', color: 'emerald', logoUrl: 'https://j.top4top.io/p_35245o2460.jpg'},
-      ],
+      ]
   };
 
-  let activeServer = 'server1'; // السيرفر النشط الافتراضي
+  let activeServer = 'server1'; 
 
-  // دالة مساعدة لتوليد كود HTML لبطاقة القناة
   function createChannelCard(channel) {
-      // ⭐️ الأيقونة الافتراضية (SVG) في حال عدم توفر رابط صورة ⭐️
       const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-${channel.color}-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>`;
       
       let logoContent;
 
       if (channel.logoUrl && channel.logoUrl.trim() !== '') {
-          // إذا كان هناك رابط شعار، استخدم وسم <img>
-          // onError لإرجاع الأيقونة الافتراضية في حال فشل تحميل الصورة
           logoContent = `
               <img 
                   src="${channel.logoUrl}" 
@@ -289,10 +268,8 @@
               >
           `;
       } else {
-          // إذا لم يكن هناك رابط، استخدم أيقونة SVG الافتراضية
           logoContent = fallbackSvg;
       }
-
 
       return `
           <div 
@@ -314,18 +291,11 @@
       `;
   }
   
-  /**
-   * تبديل السيرفر وعرض القنوات التابعة له.
-   * @param {string} serverId - مُعرف السيرفر (مثل 'server1', 'server2').
-   */
   function switchServer(serverId) {
-      // ⭐️ تم إضافة فحص للتأكد من وجود السيرفر قبل المعالجة ⭐️
       if (!CHANNELS[serverId]) {
         console.warn(`Server ID ${serverId} not found.`);
-        // إذا كان السيرفر المحذوف هو النشط، نعود للسيرفر الافتراضي
         if (serverId === activeServer && serverId !== 'server1') {
             activeServer = 'server1';
-            // نواصل تنفيذ الدالة مع السيرفر الجديد
         } else {
             return; 
         }
@@ -335,7 +305,6 @@
       const channelListContainer = document.getElementById('channelList');
       const serverButtons = document.querySelectorAll('.server-button');
       
-      // 1. تحديث شكل زر السيرفر النشط
       serverButtons.forEach(btn => {
           btn.classList.remove('server-button-active');
           if (btn.dataset.serverId === serverId) {
@@ -343,42 +312,36 @@
           }
       });
 
-      // 2. عرض القنوات الخاصة بالسيرفر
-      channelListContainer.innerHTML = ''; // تفريغ القائمة الحالية
+      channelListContainer.innerHTML = ''; 
       CHANNELS[serverId].forEach(channel => {
           channelListContainer.innerHTML += createChannelCard(channel);
       });
 
-      // 3. إيقاف البث الحالي وعرض الرسالة الافتراضية
-      if (currentHls) {
-          currentHls.destroy();
-          currentHls = null;
+      // إيقاف المشغل الحالي وتنظيفه عند التبديل
+      if (myPlayer) {
+          myPlayer.dispose();
+          myPlayer = null;
       }
-      const playerContainer = document.getElementById("playerContainer");
-      const playerPlaceholder = document.getElementById("playerPlaceholder");
       
-      if (playerPlaceholder) {
-        // إذا كان عنصر الـ Placeholder موجودًا بالفعل (أي لا يوجد فيديو قيد التشغيل)
-        playerPlaceholder.style.display = 'flex';
-      } else {
-        // إذا كان هناك فيديو قيد التشغيل، قم بإنشاء الـ Placeholder مرة أخرى
-        playerContainer.innerHTML = `
-          <div id="playerPlaceholder" class="flex flex-col items-center gap-3 px-4 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <circle cx="12" cy="12" r="9" stroke-width="1.4"></circle>
-                <path d="M10 9.5v5l4-2.5-4-2.5z" fill="currentColor" stroke-width="0.6" stroke="none"></path>
-            </svg>
-            <div class="space-y-1">
-              <p class="font-semibold text-slate-100">
-                اضغط على اسم القناة لبدء المشاهدة.
-              </p>
-              <p class="text-sm text-slate-400">
-                القناة الحالية: <span id="currentChannelLabel" class="font-semibold text-sky-300">لم يتم الاختيار</span>
-              </p>
-            </div>
+      const playerContainer = document.getElementById("playerContainer");
+      
+      // إعادة إنشاء الـ Placeholder
+      playerContainer.innerHTML = `
+        <div id="playerPlaceholder" class="flex flex-col items-center gap-3 px-4 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="9" stroke-width="1.4"></circle>
+              <path d="M10 9.5v5l4-2.5-4-2.5z" fill="currentColor" stroke-width="0.6" stroke="none"></path>
+          </svg>
+          <div class="space-y-1">
+            <p class="font-semibold text-slate-100">
+              اضغط على اسم القناة لبدء المشاهدة.
+            </p>
+            <p class="text-sm text-slate-400">
+              القناة الحالية: <span id="currentChannelLabel" class="font-semibold text-sky-300">لم يتم الاختيار</span>
+            </p>
           </div>
-        `;
-      }
+        </div>
+      `;
 
       document.getElementById("currentChannelLabel").textContent = 'لم يتم الاختيار';
       document.querySelectorAll('.channel-card-clickable').forEach(card => card.classList.remove('channel-card-active'));
@@ -386,7 +349,6 @@
 
 
   function getOriginalLink(link) {
-    // تم تبسيط الدالة
     if (link.includes('alternative.server')) {
         return 'INVALID_LINK';
     }
@@ -409,18 +371,16 @@
   }
   
   window.onload = function() {
-      // ⭐️ عند تحميل الصفحة، قم بعرض قنوات السيرفر الافتراضي ⭐️
       togglePages(true); 
       switchServer(activeServer); 
   };
 
   /**
-   * تشغيل قناة البث المباشر وطلب وضع ملء الشاشة.
+   * تشغيل قناة البث المباشر وطلب وضع ملء الشاشة باستخدام Video.js
    */
   function playChannel(id, m3u8Url, name) {
     
     const originalUrl = getOriginalLink(m3u8Url); 
-    
     const playerContainer = document.getElementById("playerContainer");
     const channelLabel = document.getElementById("currentChannelLabel");
     
@@ -429,9 +389,10 @@
         return;
     }
 
-    if (currentHls) {
-        currentHls.destroy();
-        currentHls = null;
+    // تدمير المشغل القديم إذا كان يعمل
+    if (myPlayer) {
+        myPlayer.dispose();
+        myPlayer = null;
     }
 
     // إزالة Placeholder إذا كان موجودًا
@@ -440,62 +401,46 @@
         playerPlaceholder.remove();
     }
 
-
-    // إنشاء عنصر الفيديو
+    // إنشاء عنصر الفيديو لتهيئة Video.js
     playerContainer.innerHTML = `
-      <video id="videoPlayer" class="w-full h-full rounded-xl border-0" controls autoplay playsinline></video>
+      <video id="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered" controls playsinline preload="auto"></video>
     `;
-    const video = document.getElementById('videoPlayer');
     
-    // دالة لطلب وضع ملء الشاشة (Fullscreen)
-    function requestFullscreen() {
-        // محاولة طلب ملء الشاشة على عنصر الفيديو نفسه أو حاويته
-        if (video.requestFullscreen) {
-            video.requestFullscreen();
-        } else if (video.webkitEnterFullscreen) { // ⭐️ هذه الطريقة هي الأكثر شيوعاً لـ iOS MediaElement
-            video.webkitEnterFullscreen();
-        } else if (video.webkitRequestFullscreen) { /* Safari (Modern) */
-            video.webkitRequestFullscreen();
-        } else if (video.msRequestFullscreen) { /* IE11 */
-            video.msRequestFullscreen();
+    // تهيئة مشغل Video.js
+    myPlayer = videojs('videoPlayer', {
+        autoplay: true,
+        fluid: false, 
+        sources: [{
+            src: originalUrl,
+            type: 'application/x-mpegURL'
+        }]
+    });
+
+    // دالة لطلب وضع ملء الشاشة
+    function requestFullscreen(element) {
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) { /* Safari/iOS */
+            element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) { /* IE11 */
+            element.msRequestFullscreen();
         }
     }
 
-    // 2. محرك التشغيل المتوافق مع كل الأجهزة
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // ⭐️ المسار الأمثل لأجهزة iOS (iPhone/iPad)
-      video.src = originalUrl;
-      video.addEventListener('loadedmetadata', function() {
-        // يتم طلب ملء الشاشة بعد نجاح التشغيل
-        video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked on iOS:', e));
-      });
-    } else if (Hls.isSupported()) {
-      // المسار الأمثل لأجهزة أندرويد والكمبيوتر (باستخدام HLS.js)
-      var hls = new Hls();
-      currentHls = hls; 
-      hls.loadSource(originalUrl);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, function() {
-        // يتم طلب ملء الشاشة بعد نجاح التشغيل
-        video.play().then(requestFullscreen).catch(e => console.log('Autoplay blocked:', e));
-      });
-      // معالجة الأخطاء (اختياري)
-      hls.on(Hls.Events.ERROR, function (event, data) {
-          if (data.fatal) {
-              console.error('HLS Fatal Error:', data.details, data.type);
-              playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، حدث خطأ في البث: ${data.details}. قد تكون القناة غير متاحة حالياً.</div>`;
-              document.getElementById("currentChannelLabel").textContent = 'خطأ في البث';
-              if (currentHls) {
-                  currentHls.destroy();
-                  currentHls = null;
-              }
-          }
-      });
-    } else {
-        playerContainer.innerHTML = `<div class="text-red-400 text-center p-4">عذراً، متصفحك لا يدعم تشغيل هذا النوع من البث المباشر (HLS).</div>`;
-    }
+    // عندما يكون المشغل جاهزاً ويبدأ التشغيل، اطلب ملء الشاشة
+    myPlayer.ready(function() {
+        var promise = myPlayer.play();
+        if (promise !== undefined) {
+            promise.then(function() {
+                // التشغيل التلقائي نجح
+                requestFullscreen(myPlayer.el());
+            }).catch(function(error) {
+                console.log('تم منع التشغيل التلقائي من المتصفح:', error);
+            });
+        }
+    });
 
-    // 3. تحديث واجهة المستخدم
+    // تحديث واجهة المستخدم
     if (channelLabel) {
       channelLabel.textContent = name;
     }
@@ -503,7 +448,6 @@
     const allChannelCards = document.querySelectorAll('.channel-card-clickable');
     allChannelCards.forEach(card => card.classList.remove('channel-card-active'));
     
-    // ملاحظة: قد تحتاج إلى تحديث طريقة تحديد البطاقة النشطة إذا كان هناك قنوات بنفس الـ id في سيرفرات مختلفة
     const clickedCard = Array.from(allChannelCards).find(card => card.dataset.id == id);
     if(clickedCard) {
         clickedCard.classList.add('channel-card-active');
@@ -512,8 +456,8 @@
   
   function shareSite() {
       const shareData = {
-          title: 'Rahomi TV',
-          text: 'شاهد القنوات الرياضية.',
+          title: 'GO TV MAX',
+          text: 'شاهد كأس العالم 2026.',
           url: window.location.href
       };
 
