@@ -9,9 +9,7 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght=700&display=swap" rel="stylesheet">
 
-  <!-- ⭐️ تم إضافة مشغل Video.js الاحترافي ⭐️ -->
-  <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <style>
     body {
@@ -24,7 +22,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      /* ⭐️ نمط لمنع تحديد النص على جميع المتصفحات */
       -webkit-user-select: none; 
       -ms-user-select: none; 
       user-select: none; 
@@ -49,46 +46,41 @@
       background: radial-gradient(circle at 0% 0%, rgba(56,189,248,0.15), rgba(15,23,42,0.92));
       border-color: #38bdf8;
     }
-    /* ⭐️ تم تصغير نمط الزر النشط ⭐️ */
     .server-button-active {
-        background-color: #0c4a6e; /* sky-800 */
-        border-color: #38bdf8; /* sky-400 */
+        background-color: #0c4a6e; 
+        border-color: #38bdf8; 
         box-shadow: 0 0 5px rgba(56,189,248,0.5);
     }
     #playerContainer { position: relative; }
-    #videoPlayer { min-height: 250px; } 
     .player-header {
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
     }
-    /* ⭐️ نمط جديد لشعار القناة ⭐️ */
     .channel-logo-container {
       position: relative;
       width: 40px;
       height: 40px;
-      border-radius: 8px; /* نفس شكل الحاوية */
-      overflow: hidden; /* لمنع الصورة من الخروج */
+      border-radius: 8px; 
+      overflow: hidden; 
     }
     .channel-logo-image {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* للتأكد من أن الصورة تغطي المساحة دون تشويه */
+      object-fit: cover; 
     }
     
-    /* ⭐️ تخصيص مشغل Video.js ليتناسب مع تصميمك ⭐️ */
-    .video-js {
-        width: 100% !important;
-        height: 100% !important;
-        position: absolute !important;
+    /* ⭐️ تنسيق مشغل الفيديو الجديد ⭐️ */
+    #videoPlayer {
+        width: 100%;
+        height: 100%;
+        position: absolute;
         top: 0;
         left: 0;
         border-radius: 0.75rem; 
-        overflow: hidden;
-    }
-    .video-js .vjs-tech {
-        border-radius: 0.75rem;
+        background-color: #000;
+        outline: none;
     }
   </style>
 </head>
@@ -96,21 +88,20 @@
 <body class="text-slate-100">
 
   <script>
-    // 1. منع استخدام مفاتيح فحص العناصر والمطورين (F12, Ctrl+Shift+I, إلخ)
+    // منع استخدام مفاتيح فحص العناصر
     document.onkeydown = function(e) {
-      // منع مفاتيح المطورين والقص والنسخ واللصق
       if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
         return false;
       }
       if (e.ctrlKey && (e.key === 'c' || e.key === 'x')) {
-          e.preventDefault(); // منع النسخ والقص
+          e.preventDefault(); 
       }
     };
-    // 2. منع النقر بالزر الأيمن للموس ومنع تحديد ونسخ النص
+    // منع النقر بالزر الأيمن والتحديد
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.addEventListener('selectstart', event => event.preventDefault()); 
-    document.addEventListener('copy', event => event.preventDefault()); // منع عملية النسخ نفسها
-    document.addEventListener('cut', event => event.preventDefault()); // منع عملية القص
+    document.addEventListener('copy', event => event.preventDefault()); 
+    document.addEventListener('cut', event => event.preventDefault()); 
   </script>
 
   <div id="loginPage" class="hidden w-full h-screen fixed top-0 left-0 z-50 flex items-center justify-center backdrop-blur-sm bg-gray-900/80">
@@ -235,19 +226,14 @@
   </main>
 
   <script>
-  let myPlayer = null; // متغير مشغل Video.js
+  let hlsInstance = null; // متغير مشغل HLS.js
   const CORRECT_CODE = "1212"; 
   let isLoggedIn = true; 
   
+  // ⭐️ تم تقليص القنوات ووضع الرابط المطلوب ⭐️
   const CHANNELS = {
       'server1': [
-          {id: 1, name: 'الرياضية 1', url:'http://go-tv.site/live/ch1_1080_stable.m3u8', color: 'sky', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 2, name: 'الرياضية 2', url: 'https://stream.supertv.gg:3002/supertv/sport/stv2/ch2/adaptive.m3u8', color: 'red', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 3, name: 'الرياضية 3', url:'https://stream.supertv.gg:3003/supertv/sport/stv3/ch3/adaptive.m3u8', color: 'emerald', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 4, name: 'الرياضية 4', url: 'https://stream.supertv.gg:3004/supertv/sport/stv4/ch4/adaptive.m3u8', color: 'yellow', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 5, name: 'الرياضية 5', url: 'https://stream.supertv.gg:3005/supertv/sport/stv5/ch5/adaptive.m3u8', color: 'purple', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 6, name: 'الرياضية 6', url: 'https://stream.supertv.gg:3006/supertv/sport/stv6/ch6/adaptive.m3u8', color: 'pink', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 7, name: 'الرياضية 7', url: 'https://stream.supertv.gg:3007/supertv/sport/stv7/ch7/adaptive.m3u8', color: 'orange', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'}, 
+          {id: 1, name: 'الرياضية 1', url:'https://go-tv.site/live/ch1_1080_stable.m3u8', color: 'sky', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'}
       ]
   };
 
@@ -292,14 +278,7 @@
   }
   
   function switchServer(serverId) {
-      if (!CHANNELS[serverId]) {
-        console.warn(`Server ID ${serverId} not found.`);
-        if (serverId === activeServer && serverId !== 'server1') {
-            activeServer = 'server1';
-        } else {
-            return; 
-        }
-      }
+      if (!CHANNELS[serverId]) return;
 
       activeServer = serverId;
       const channelListContainer = document.getElementById('channelList');
@@ -318,14 +297,13 @@
       });
 
       // إيقاف المشغل الحالي وتنظيفه عند التبديل
-      if (myPlayer) {
-          myPlayer.dispose();
-          myPlayer = null;
+      if (hlsInstance) {
+          hlsInstance.destroy();
+          hlsInstance = null;
       }
       
       const playerContainer = document.getElementById("playerContainer");
       
-      // إعادة إنشاء الـ Placeholder
       playerContainer.innerHTML = `
         <div id="playerPlaceholder" class="flex flex-col items-center gap-3 px-4 text-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -348,13 +326,6 @@
   }
 
 
-  function getOriginalLink(link) {
-    if (link.includes('alternative.server')) {
-        return 'INVALID_LINK';
-    }
-    return link;
-  }
-
   function togglePages(status) {
       const loginPage = document.getElementById("loginPage");
       const channelsContent = document.getElementById("channelsContent");
@@ -376,71 +347,94 @@
   };
 
   /**
-   * تشغيل قناة البث المباشر وطلب وضع ملء الشاشة باستخدام Video.js
+   * دالة لطلب وضع ملء الشاشة
+   */
+  function requestFullscreen(element) {
+      if (element.requestFullscreen) {
+          element.requestFullscreen();
+      } else if (element.webkitRequestFullscreen) { /* Safari/iOS */
+          element.webkitRequestFullscreen();
+      } else if (element.msRequestFullscreen) { /* IE11 */
+          element.msRequestFullscreen();
+      }
+  }
+
+  /**
+   * تشغيل قناة البث المباشر باستخدام HLS.js
    */
   function playChannel(id, m3u8Url, name) {
     
-    const originalUrl = getOriginalLink(m3u8Url); 
+    const originalUrl = m3u8Url; 
     const playerContainer = document.getElementById("playerContainer");
     const channelLabel = document.getElementById("currentChannelLabel");
     
-    if (originalUrl === 'INVALID_LINK' || originalUrl === '') {
+    if (originalUrl === '') {
         alert('لا يوجد رابط بث لهذه القناة حالياً.');
         return;
     }
 
     // تدمير المشغل القديم إذا كان يعمل
-    if (myPlayer) {
-        myPlayer.dispose();
-        myPlayer = null;
+    if (hlsInstance) {
+        hlsInstance.destroy();
+        hlsInstance = null;
     }
 
-    // إزالة Placeholder إذا كان موجودًا
-    const playerPlaceholder = document.getElementById("playerPlaceholder");
-    if (playerPlaceholder) {
-        playerPlaceholder.remove();
-    }
-
-    // إنشاء عنصر الفيديو لتهيئة Video.js
+    // إعداد واجهة الفيديو الأصلية بدلاً من Video.js
     playerContainer.innerHTML = `
-      <video id="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered" controls playsinline preload="auto"></video>
+      <video id="videoPlayer" controls playsinline></video>
     `;
     
-    // تهيئة مشغل Video.js
-    myPlayer = videojs('videoPlayer', {
-        autoplay: true,
-        fluid: false, 
-        sources: [{
-            src: originalUrl,
-            type: 'application/x-mpegURL'
-        }]
-    });
+    const videoElement = document.getElementById('videoPlayer');
 
-    // دالة لطلب وضع ملء الشاشة
-    function requestFullscreen(element) {
-        if (element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if (element.webkitRequestFullscreen) { /* Safari/iOS */
-            element.webkitRequestFullscreen();
-        } else if (element.msRequestFullscreen) { /* IE11 */
-            element.msRequestFullscreen();
-        }
-    }
-
-    // عندما يكون المشغل جاهزاً ويبدأ التشغيل، اطلب ملء الشاشة
-    myPlayer.ready(function() {
-        var promise = myPlayer.play();
-        if (promise !== undefined) {
-            promise.then(function() {
-                // التشغيل التلقائي نجح
-                requestFullscreen(myPlayer.el());
+    // تهيئة HLS.js
+    if (Hls.isSupported()) {
+        hlsInstance = new Hls({
+            debug: false,
+        });
+        hlsInstance.loadSource(originalUrl);
+        hlsInstance.attachMedia(videoElement);
+        
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+            videoElement.play().then(() => {
+                requestFullscreen(videoElement);
             }).catch(function(error) {
                 console.log('تم منع التشغيل التلقائي من المتصفح:', error);
             });
-        }
-    });
+        });
+        
+        // التعامل مع أخطاء البث المباشر
+        hlsInstance.on(Hls.Events.ERROR, function (event, data) {
+            if (data.fatal) {
+                switch (data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                        console.error("خطأ في الشبكة، جاري المحاولة...");
+                        hlsInstance.startLoad();
+                        break;
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                        console.error("خطأ في الميديا، جاري الإصلاح...");
+                        hlsInstance.recoverMediaError();
+                        break;
+                    default:
+                        hlsInstance.destroy();
+                        break;
+                }
+            }
+        });
 
-    // تحديث واجهة المستخدم
+    } 
+    // لدعم متصفحات Safari و iOS التي تدعم HLS بشكل افتراضي
+    else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+        videoElement.src = originalUrl;
+        videoElement.addEventListener('loadedmetadata', function() {
+            videoElement.play().then(() => {
+                requestFullscreen(videoElement);
+            }).catch(function(error) {
+                console.log('تم منع التشغيل التلقائي من المتصفح:', error);
+            });
+        });
+    }
+
+    // تحديث واجهة المستخدم (تحديد القناة النشطة)
     if (channelLabel) {
       channelLabel.textContent = name;
     }
