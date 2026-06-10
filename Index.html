@@ -75,16 +75,39 @@
             gap: 15px;
             width: 100%;
             max-width: 350px;
-            padding: 15px 30px;
+            padding: 12px 30px; /* تم تقليل الحشوة قليلاً لتناسب النصين */
             border: none;
             border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             color: white;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             text-decoration: none;
+        }
+
+        /* تنسيق النصوص داخل الزر */
+        .btn-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* توسيط النص */
+            line-height: 1.3;
+        }
+
+        .version-text {
+            font-size: 0.8rem;
+            font-weight: 400;
+            opacity: 0.8;
+            letter-spacing: 1px;
+            font-family: sans-serif; /* لجعل الأرقام تظهر بشكل عصري */
+        }
+
+        .main-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .btn i {
+            font-size: 1.5rem; /* تكبير الأيقونة قليلاً لتتناسب مع ارتفاع النصين */
         }
 
         .btn-phone {
@@ -262,12 +285,20 @@
         <div class="download-buttons">
             <!-- زر الهواتف -->
             <button class="btn btn-phone" onclick="startSilentDownload('رابط_ميديافاير_المباشر_للهواتف_هنا')">
-                <i class="fa-solid fa-mobile-screen"></i> تحميل للهواتف
+                <i class="fa-solid fa-mobile-screen"></i>
+                <div class="btn-content">
+                    <span class="version-text">1.0.0</span>
+                    <span class="main-text">نسخة الهواتف</span>
+                </div>
             </button>
             
-            <!-- زر الشاشات والـ TV BOX مع الرابط الجديد والمباشر -->
+            <!-- زر الشاشات والـ TV BOX -->
             <button class="btn btn-tv" onclick="startSilentDownload('https://github.com/Rahomi1/Gotvmax_tv/releases/download/v1.0/app-release.apk')">
-                <i class="fa-solid fa-tv"></i> تحميل للشاشات وال TV BOX
+                <i class="fa-solid fa-tv"></i>
+                <div class="btn-content">
+                    <span class="version-text">1.0.0</span>
+                    <span class="main-text">نسخة الشاشات وال TV BOX</span>
+                </div>
             </button>
         </div>
 
