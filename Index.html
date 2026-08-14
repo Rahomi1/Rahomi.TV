@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GO TV MAX | تحميل التطبيق</title>
-    <!-- استدعاء خط Cairo من جوجل -->
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- استدعاء مكتبة الأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
             --bg-color: #0f172a;
@@ -37,11 +36,14 @@
             flex-direction: column;
         }
 
-        /* قسم البداية (Hero) */
         .hero {
             text-align: center;
             padding: 80px 20px 40px;
-            background: linear-gradient(180deg, rgba(30,41,59,1) 0%, rgba(15,23,42,1) 100%);
+            background: linear-gradient(
+                180deg,
+                rgba(30,41,59,1) 0%,
+                rgba(15,23,42,1) 100%
+            );
         }
 
         .hero h1 {
@@ -59,7 +61,6 @@
             margin-bottom: 40px;
         }
 
-        /* أزرار التحميل */
         .download-buttons {
             display: flex;
             flex-direction: column;
@@ -75,7 +76,7 @@
             gap: 15px;
             width: 100%;
             max-width: 350px;
-            padding: 12px 30px; /* تم تقليل الحشوة قليلاً لتناسب النصين */
+            padding: 12px 30px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -85,11 +86,10 @@
             text-decoration: none;
         }
 
-        /* تنسيق النصوص داخل الزر */
         .btn-content {
             display: flex;
             flex-direction: column;
-            align-items: center; /* توسيط النص */
+            align-items: center;
             line-height: 1.3;
         }
 
@@ -98,7 +98,7 @@
             font-weight: 400;
             opacity: 0.8;
             letter-spacing: 1px;
-            font-family: sans-serif; /* لجعل الأرقام تظهر بشكل عصري */
+            font-family: sans-serif;
         }
 
         .main-text {
@@ -107,30 +107,19 @@
         }
 
         .btn i {
-            font-size: 1.5rem; /* تكبير الأيقونة قليلاً لتتناسب مع ارتفاع النصين */
+            font-size: 1.5rem;
         }
 
         .btn-phone {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
         }
-        
+
         .btn-phone:hover {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
         }
 
-        .btn-tv {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        }
-
-        .btn-tv:hover {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-        }
-
-        /* أكواد التنزيل */
         .downloader-section {
             background-color: var(--surface-color);
             padding: 15px 25px;
@@ -156,7 +145,6 @@
             font-size: 1.1rem;
         }
 
-        /* الأقسام الجديدة باللون الأخضر */
         .green-sections-container {
             display: flex;
             flex-direction: column;
@@ -173,7 +161,11 @@
             align-items: center;
             gap: 20px;
             width: 100%;
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+            background: linear-gradient(
+                135deg,
+                var(--accent-color),
+                var(--accent-hover)
+            );
             padding: 18px 25px;
             border-radius: 20px;
             text-decoration: none;
@@ -213,7 +205,6 @@
             opacity: 0.9;
         }
 
-        /* قسم المميزات */
         .features {
             padding: 60px 20px;
             max-width: 1200px;
@@ -264,7 +255,6 @@
             font-size: 0.95rem;
         }
 
-        /* التذييل */
         footer {
             margin-top: auto;
             text-align: center;
@@ -275,125 +265,179 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- قسم الهيدر والتحميل -->
     <header class="hero">
+
         <h1>تحميل تطبيق GO TV MAX</h1>
-        <p>بوابتك لعالم الترفيه اللامحدود، حمل التطبيق الآن واستمتع!</p>
+
+        <p>
+            بوابتك لعالم الترفيه اللامحدود، حمل التطبيق الآن واستمتع!
+        </p>
 
         <div class="download-buttons">
-            <!-- زر الهواتف -->
-            <button class="btn btn-phone" onclick="startSilentDownload('رابط_ميديافاير_المباشر_للهواتف_هنا')">
+
+            <!-- زر تحميل التطبيق لجميع الأجهزة -->
+            <button
+                class="btn btn-phone"
+                onclick="startSilentDownload('https://github.com/Rahomi1/my-iptv-list/releases/download/1.1.2v/GO_TV_MAX_1.0.2v.apk')"
+            >
                 <i class="fa-solid fa-mobile-screen"></i>
+
                 <div class="btn-content">
-                    <span class="version-text">1.0.0</span>
-                    <span class="main-text">نسخة الهواتف</span>
+                    <span class="version-text">1.0.2v</span>
+                    <span class="main-text">
+                        نسخة الهواتف / الشاشات وال TV BOX
+                    </span>
                 </div>
             </button>
-            
-            <!-- زر الشاشات والـ TV BOX -->
-            <button class="btn btn-tv" onclick="startSilentDownload('https://github.com/Rahomi1/Gotvmax_tv/releases/download/v1.0/app-release.apk')">
-                <i class="fa-solid fa-tv"></i>
-                <div class="btn-content">
-                    <span class="version-text">1.0.0</span>
-                    <span class="main-text">نسخة الشاشات وال TV BOX</span>
-                </div>
-            </button>
+
         </div>
 
-        <!-- كود الداونلودر الخاص بالشاشات فقط -->
+        <!-- كود الداونلودر الخاص بالشاشات -->
         <div class="downloader-section">
-            <p>كود التنزيل السريع للشاشات والـ TV BOX (Downloader)</p>
-            <p style="margin-top: 8px;">
-                الكود: <span class="code-badge">1438131</span>
+
+            <p>
+                كود التنزيل السريع للشاشات والـ TV BOX (Downloader)
             </p>
+
+            <p style="margin-top: 8px;">
+                الكود:
+                <span class="code-badge">1438131</span>
+            </p>
+
         </div>
 
-        <!-- الأقسام الإضافية باللون الأخضر (الأيفون والتليكرام) -->
+        <!-- الأقسام الإضافية -->
         <div class="green-sections-container">
+
             <!-- قسم المشاهدة للأيفون -->
-            <a href="https://rahomi1.github.io/Rahomi.TV/" target="_blank" class="green-section-card">
+            <a
+                href="https://rahomi1.github.io/Rahomi.TV/"
+                target="_blank"
+                class="green-section-card"
+            >
                 <div class="icon-box">
                     <i class="fa-brands fa-apple"></i>
                 </div>
+
                 <div class="card-info">
                     <h3>المشاهدة للأيفون</h3>
-                    <p>اضغط هنا للمشاهدة المباشرة عبر متصفحك</p>
+                    <p>
+                        اضغط هنا للمشاهدة المباشرة عبر متصفحك
+                    </p>
                 </div>
             </a>
 
             <!-- قسم التليكرام -->
-            <a href="https://t.me/GOTV_RI" target="_blank" class="green-section-card">
+            <a
+                href="https://t.me/GOTV_RI"
+                target="_blank"
+                class="green-section-card"
+            >
                 <div class="icon-box">
                     <i class="fa-brands fa-telegram"></i>
                 </div>
+
                 <div class="card-info">
                     <h3>تابعنا على التلكرام</h3>
-                    <p>لمعرفة آخر الأخبار والتحديثات أولاً بأول</p>
+                    <p>
+                        لمعرفة آخر الأخبار والتحديثات أولاً بأول
+                    </p>
                 </div>
             </a>
+
         </div>
+
     </header>
 
     <!-- قسم لماذا تختار التطبيق -->
     <section class="features">
+
         <h2>لماذا GO TV MAX؟</h2>
+
         <div class="features-grid">
-            
+
             <div class="feature-card">
                 <i class="fa-solid fa-rocket feature-icon"></i>
+
                 <h3>سريع ومستقر</h3>
-                <p>نستخدم أحدث السيرفرات العالمية لضمان تجربة مشاهدة سلسة بدون تقطيع أو تأخير.</p>
+
+                <p>
+                    نستخدم أحدث السيرفرات العالمية لضمان تجربة مشاهدة
+                    سلسة بدون تقطيع أو تأخير.
+                </p>
             </div>
 
             <div class="feature-card">
                 <i class="fa-solid fa-layer-group feature-icon"></i>
+
                 <h3>قنوات لا حصر لها</h3>
-                <p>آلاف القنوات العربية والعالمية، الرياضية والترفيهية بجودات متعددة تناسب جميع السرعات.</p>
+
+                <p>
+                    آلاف القنوات العربية والعالمية، الرياضية والترفيهية
+                    بجودات متعددة تناسب جميع السرعات.
+                </p>
             </div>
 
             <div class="feature-card">
                 <i class="fa-solid fa-film feature-icon"></i>
+
                 <h3>محتوى مميز ومحدث</h3>
-                <p>مكتبة ضخمة من أحدث الأفلام والمسلسلات العربية والأجنبية يتم تحديثها بشكل يومي.</p>
+
+                <p>
+                    مكتبة ضخمة من أحدث الأفلام والمسلسلات العربية
+                    والأجنبية يتم تحديثها بشكل يومي.
+                </p>
             </div>
 
             <div class="feature-card">
                 <i class="fa-solid fa-headset feature-icon"></i>
+
                 <h3>دعم فني متواصل</h3>
-                <p>فريقنا متواجد دائماً لحل أي مشكلة قد تواجهك لضمان أفضل تجربة استخدام.</p>
+
+                <p>
+                    فريقنا متواجد دائماً لحل أي مشكلة قد تواجهك
+                    لضمان أفضل تجربة استخدام.
+                </p>
             </div>
 
         </div>
+
     </section>
 
     <!-- الفوتر -->
     <footer>
-        <p>جميع الحقوق محفوظة &copy; 2026 لـ GO TV MAX</p>
+        <p>
+            جميع الحقوق محفوظة &copy; 2026 لـ GO TV MAX
+        </p>
     </footer>
 
     <!-- سكربت التحميل المباشر -->
     <script>
-        function startSilentDownload(fileUrl) {
-            // التحقق من وضع الرابط الوهمي للهواتف فقط
-            if(fileUrl.includes("رابط_ميديافاير")) {
-                alert("يرجى استبدال الرابط الوهمي للهواتف برابط ميديافاير المباشر في الكود.");
-                return;
-            }
 
-            // إنشاء إطار مخفي (iframe) في الصفحة وبدء التحميل فوراً دون مغادرتها
+        function startSilentDownload(fileUrl) {
+
             const iframe = document.createElement('iframe');
+
             iframe.style.display = 'none';
-            iframe.src = fileUrl; 
-            
+
+            iframe.src = fileUrl;
+
             document.body.appendChild(iframe);
 
-            // إزالة الإطار بعد 10 ثواني لتنظيف الكود
             setTimeout(() => {
-                document.body.removeChild(iframe);
+
+                if (iframe.parentNode) {
+                    iframe.parentNode.removeChild(iframe);
+                }
+
             }, 10000);
         }
+
     </script>
+
 </body>
 </html>
