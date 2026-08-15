@@ -1,3 +1,5 @@
+كود GO TV MAX المعدل
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -7,7 +9,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght=700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght@700&display=swap" rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -22,65 +24,91 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      -webkit-user-select: none; 
-      -ms-user-select: none; 
-      user-select: none; 
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
-    .title-font { font-family: 'Changa', sans-serif; }
+
+    .title-font {
+      font-family: 'Changa', sans-serif;
+    }
+
     .glass {
       background: rgba(15,23,42,0.9);
       border: 1px solid rgba(148,163,184,0.2);
     }
+
     .login-card {
       background: rgba(15,23,42,0.95);
       border: 1px solid rgba(148,163,184,0.2);
     }
+
     input:focus {
       border-color: #38bdf8;
       box-shadow: 0 0 0 3px rgba(56,189,248,0.5);
     }
-    .channel-card-clickable { transition: all 0.25s ease; cursor: pointer; }
-    .channel-card-clickable:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(56,189,248,0.3); border-color: rgba(56,189,248,0.5); }
+
+    .channel-card-clickable {
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .channel-card-clickable:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(56,189,248,0.3);
+      border-color: rgba(56,189,248,0.5);
+    }
+
     .channel-card-active {
       box-shadow: 0 0 20px rgba(56,189,248,0.6);
-      background: radial-gradient(circle at 0% 0%, rgba(56,189,248,0.15), rgba(15,23,42,0.92));
+      background: radial-gradient(
+        circle at 0% 0%,
+        rgba(56,189,248,0.15),
+        rgba(15,23,42,0.92)
+      );
       border-color: #38bdf8;
     }
+
     .server-button-active {
-        background-color: #0c4a6e; 
-        border-color: #38bdf8; 
-        box-shadow: 0 0 5px rgba(56,189,248,0.5);
+      background-color: #0c4a6e;
+      border-color: #38bdf8;
+      box-shadow: 0 0 5px rgba(56,189,248,0.5);
     }
-    #playerContainer { position: relative; }
+
+    #playerContainer {
+      position: relative;
+    }
+
     .player-header {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }
+
     .channel-logo-container {
       position: relative;
       width: 40px;
       height: 40px;
-      border-radius: 8px; 
-      overflow: hidden; 
+      border-radius: 8px;
+      overflow: hidden;
     }
+
     .channel-logo-image {
       width: 100%;
       height: 100%;
-      object-fit: cover; 
+      object-fit: cover;
     }
-    
-    /* ⭐️ تنسيق مشغل الفيديو الجديد ⭐️ */
+
     #videoPlayer {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        border-radius: 0.75rem; 
-        background-color: #000;
-        outline: none;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 0.75rem;
+      background-color: #000;
+      outline: none;
     }
   </style>
 </head>
@@ -88,100 +116,158 @@
 <body class="text-slate-100">
 
   <script>
-    // منع استخدام مفاتيح فحص العناصر
     document.onkeydown = function(e) {
-      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && (
+          e.key === 'I' ||
+          e.key === 'C' ||
+          e.key === 'J'
+        )) ||
+        (e.ctrlKey && e.key === 'U')
+      ) {
         return false;
       }
+
       if (e.ctrlKey && (e.key === 'c' || e.key === 'x')) {
-          e.preventDefault(); 
+        e.preventDefault();
       }
     };
-    // منع النقر بالزر الأيمن والتحديد
+
     document.addEventListener('contextmenu', event => event.preventDefault());
-    document.addEventListener('selectstart', event => event.preventDefault()); 
-    document.addEventListener('copy', event => event.preventDefault()); 
-    document.addEventListener('cut', event => event.preventDefault()); 
+    document.addEventListener('selectstart', event => event.preventDefault());
+    document.addEventListener('copy', event => event.preventDefault());
+    document.addEventListener('cut', event => event.preventDefault());
   </script>
 
-  <div id="loginPage" class="hidden w-full h-screen fixed top-0 left-0 z-50 flex items-center justify-center backdrop-blur-sm bg-gray-900/80">
-      <div class="login-card rounded-2xl p-6 md:p-8 shadow-2xl max-w-sm w-full space-y-6">
-        <h1 class="text-3xl font-bold text-center text-sky-400">
-          GO TV MAX
-        </h1>
-        <p class="text-center text-slate-400 text-sm font-semibold">
-          بث مباشر للقنوات الرياضية والعالمية مجاناً
-        </p>
+  <div
+    id="loginPage"
+    class="hidden w-full h-screen fixed top-0 left-0 z-50 flex items-center justify-center backdrop-blur-sm bg-gray-900/80"
+  >
+    <div class="login-card rounded-2xl p-6 md:p-8 shadow-2xl max-w-sm w-full space-y-6">
 
-        <div class="space-y-4">
-          <input 
-            type="password"
-            id="passCodeInput"
-            class="w-full px-4 py-3 text-lg text-center bg-slate-800 border-2 border-slate-700 rounded-lg focus:outline-none transition text-slate-100"
-            placeholder="أدخل رمز المرور" 
-            maxlength="4"
-            onkeyup="if(this.value.length === 4) checkCode();"
-          >
-          <button
-            id="loginBtn"
-            onclick="checkCode()"
-            class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition duration-300"
-          >
-            دخول
-          </button>
-          <p id="message" class="text-center text-sm text-red-400 h-5"></p>
-        </div>
+      <h1 class="text-3xl font-bold text-center text-sky-400">
+        GO TV MAX
+      </h1>
+
+      <p class="text-center text-slate-400 text-sm font-semibold">
+        بث مباشر للقنوات الرياضية والعالمية مجاناً
+      </p>
+
+      <div class="space-y-4">
+
+        <input
+          type="password"
+          id="passCodeInput"
+          class="w-full px-4 py-3 text-lg text-center bg-slate-800 border-2 border-slate-700 rounded-lg focus:outline-none transition text-slate-100"
+          placeholder="أدخل رمز المرور"
+          maxlength="4"
+          onkeyup="if(this.value.length === 4) checkCode();"
+        >
+
+        <button
+          id="loginBtn"
+          onclick="checkCode()"
+          class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition duration-300"
+        >
+          دخول
+        </button>
+
+        <p id="message" class="text-center text-sm text-red-400 h-5"></p>
+
       </div>
+    </div>
   </div>
 
-  <main id="channelsContent" class="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8 w-full">
+  <main
+    id="channelsContent"
+    class="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8 w-full"
+  >
 
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
       <section class="xl:col-span-3 space-y-5 order-1 xl:order-none">
 
         <div class="glass rounded-2xl p-4 md:p-6 shadow-2xl">
-          
+
           <div class="player-header mb-4">
-              <h1 class="player-title title-font text-2xl font-bold text-sky-200">
-                GO TV MAX
-              </h1>
+
+            <h1 class="player-title title-font text-2xl font-bold text-sky-200">
+              GO TV MAX
+            </h1>
+
           </div>
+
           <div
             id="playerContainer"
-            class="relative w-full aspect-video rounded-xl bg-black border border-slate-800 shadow-inner flex items-center justify-center text-slate-400">
+            class="relative w-full aspect-video rounded-xl bg-black border border-slate-800 shadow-inner flex items-center justify-center text-slate-400"
+          >
 
-            <div id="playerPlaceholder" class="flex flex-col items-center gap-3 px-4 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <circle cx="12" cy="12" r="9" stroke-width="1.4"></circle>
-                  <path d="M10 9.5v5l4-2.5-4-2.5z" fill="currentColor" stroke-width="0.6" stroke="none"></path>
+            <div
+              id="playerPlaceholder"
+              class="flex flex-col items-center gap-3 px-4 text-center"
+            >
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-8 h-8 text-sky-300"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="9"
+                  stroke-width="1.4"
+                ></circle>
+
+                <path
+                  d="M10 9.5v5l4-2.5-4-2.5z"
+                  fill="currentColor"
+                  stroke-width="0.6"
+                  stroke="none"
+                ></path>
               </svg>
+
               <div class="space-y-1">
+
                 <p class="font-semibold text-slate-100">
                   اضغط على اسم القناة لبدء المشاهدة.
                 </p>
+
                 <p class="text-sm text-slate-400">
-                  القناة الحالية: <span id="currentChannelLabel" class="font-semibold text-sky-300">لم يتم الاختيار</span>
+                  القناة الحالية:
+                  <span
+                    id="currentChannelLabel"
+                    class="font-semibold text-sky-300"
+                  >
+                    لم يتم الاختيار
+                  </span>
                 </p>
+
               </div>
             </div>
           </div>
-          
+
           <div class="mt-4 border-t border-slate-800 pt-4">
-              
-              <div class="flex flex-wrap gap-1 justify-center" id="allServersContainer">
-                  
-                  <button 
-                      onclick="switchServer('server1')"
-                      id="btn-server1"
-                      class="py-0.5 px-2 text-xs font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button server-button-active"
-                      data-server-id="server1"
-                  >
-                      كأس العالم 2026
-                  </button>
-                  
-              </div>
-             
+
+            <div
+              class="flex flex-wrap gap-1 justify-center"
+              id="allServersContainer"
+            >
+
+              <button
+                onclick="switchServer('server1')"
+                id="btn-server1"
+                class="py-0.5 px-2 text-xs font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button server-button-active"
+                data-server-id="server1"
+              >
+                قنوات رياضية بواسطة Rahomi
+              </button>
+
+            </div>
+
           </div>
         </div>
       </section>
@@ -189,36 +275,74 @@
       <aside class="space-y-6 xl:col-span-1 order-2 xl:order-none">
 
         <div class="glass rounded-2xl p-4 md:p-5 shadow-xl">
+
           <h2 class="title-font text-xl font-bold text-sky-200 mb-4">
-            القنوات 
+            القنوات
           </h2>
 
-          <div class="flex flex-col gap-3" id="channelList">
-          </div>
+          <div
+            class="flex flex-col gap-3"
+            id="channelList"
+          ></div>
+
         </div>
-        
+
         <div class="glass rounded-2xl p-4 md:p-5 shadow-xl border-sky-400/50">
-             <div class="flex flex-col items-center justify-center gap-3">
-                <a href="https://t.me/GOTV_RI" target="_blank" class="w-full">
-                    <button class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/50">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                           <path d="M9.197 16.59L9 20.25c.36 0 .518-.155.706-.341l1.692-1.647 3.507 2.565c.643.354 1.097.168 1.266-.596l2.295-10.785c.234-.944-.34-1.314-.964-1.085L3.77 11.01c-.93.36-.916.879-.158 1.113l3.94 1.227 9.146-5.77c.43-.262.825-.117.501.144"></path>
-                         </svg>
-                        حمل تطبيقنا على أجهزة الأندرويد
-                    </button>
-                </a>
-                
-                <button onclick="shareSite()" class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-semibold bg-sky-600/30 hover:bg-sky-600/50 transition">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="18" cy="5" r="3"></circle>
-                        <circle cx="6" cy="12" r="3"></circle>
-                        <circle cx="18" cy="19" r="3"></circle>
-                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                    </svg>
-                    شارك الموقع لتعم الفائدة
-                </button>
-            </div>
+
+          <div class="flex flex-col items-center justify-center gap-3">
+
+            <a
+              href="https://t.me/GOTV_RI"
+              target="_blank"
+              class="w-full"
+            >
+
+              <button
+                class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/50"
+              >
+
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M9.197 16.59L9 20.25c.36 0 .518-.155.706-.341l1.692-1.647 3.507 2.565c.643.354 1.097.168 1.266-.596l2.295-10.785c.234-.944-.34-1.314-.964-1.085L3.77 11.01c-.93.36-.916.879-.158 1.113l3.94 1.227 9.146-5.77c.43-.262.825-.117.501.144"></path>
+                </svg>
+
+                حمل تطبيقنا على أجهزة الأندرويد
+
+              </button>
+
+            </a>
+
+            <button
+              onclick="shareSite()"
+              class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-semibold bg-sky-600/30 hover:bg-sky-600/50 transition"
+            >
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+
+              شارك الموقع لتعم الفائدة
+
+            </button>
+
+          </div>
         </div>
 
       </aside>
@@ -226,247 +350,527 @@
   </main>
 
   <script>
-  let hlsInstance = null; // متغير مشغل HLS.js
-  const CORRECT_CODE = "1212"; 
-  let isLoggedIn = true; 
-  
-  // ⭐️ تم ترتيب القنوات وتوحيد الصورة حسب الطلب ⭐️
-  const CHANNELS = {
+
+    let hlsInstance = null;
+
+    const CORRECT_CODE = "1212";
+
+    let isLoggedIn = true;
+
+    /*
+     * القنوات
+     *
+     * Bein Sport 1 → Worker 1
+     * Bein Sport 2 → Worker 2
+     * Bein Sport 3 → Worker 3
+     * Bein Sport 4 → Worker 4
+     * Bein Sport 5 → Worker 5
+     *
+     * العراقية الرياضية في النهاية
+     */
+
+    const CHANNELS = {
+
       'server1': [
-          {id: 1, name: 'Bein Sport 1', url:'https://prime-pro.sytes.net/stream/91', color: 'sky', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 2, name: 'Bein Sport 2', url:'https://b1.gotvmax0.workers.dev/', color: 'sky', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 3, name: 'Bein Sport 3', url:'https://prime-pro.sytes.net/stream/93', color: 'sky', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'},
-          {id: 4, name: 'العراقية الرياضية', url:'https://imn-live.esite-lab.com/hls/iraqia-sports-1.m3u8', color: 'sky', logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'}
+
+        {
+          id: 1,
+          name: 'Bein Sport 1',
+          url: 'https://b1.gotvmax0.workers.dev/',
+          color: 'sky',
+          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
+        },
+
+        {
+          id: 2,
+          name: 'Bein Sport 2',
+          url: 'https://b2.gotvmax0.workers.dev/',
+          color: 'sky',
+          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
+        },
+
+        {
+          id: 3,
+          name: 'Bein Sport 3',
+          url: 'https://b3.gotvmax0.workers.dev/',
+          color: 'sky',
+          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
+        },
+
+        {
+          id: 4,
+          name: 'Bein Sport 4',
+          url: 'https://b4.gotvmax0.workers.dev/',
+          color: 'sky',
+          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
+        },
+
+        {
+          id: 5,
+          name: 'Bein Sport 5',
+          url: 'https://b5.gotvmax0.workers.dev/',
+          color: 'sky',
+          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
+        },
+
+        {
+          id: 6,
+          name: 'العراقية الرياضية',
+          url: 'https://imn-live.esite-lab.com/hls/iraqia-sports-1.m3u8',
+          color: 'sky',
+          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
+        }
+
       ]
-  };
 
-  let activeServer = 'server1'; 
+    };
 
-  function createChannelCard(channel) {
-      const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-${channel.color}-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>`;
-      
+    let activeServer = 'server1';
+
+    function createChannelCard(channel) {
+
+      const fallbackSvg = `
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-6 h-6 text-${channel.color}-300"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect
+            x="2"
+            y="7"
+            width="20"
+            height="15"
+            rx="2"
+            ry="2"
+          ></rect>
+
+          <polyline points="17 2 12 7 7 2"></polyline>
+        </svg>
+      `;
+
       let logoContent;
 
       if (channel.logoUrl && channel.logoUrl.trim() !== '') {
-          logoContent = `
-              <img 
-                  src="${channel.logoUrl}" 
-                  alt="${channel.name} logo" 
-                  class="channel-logo-image" 
-                  onerror="this.onerror=null; this.parentElement.innerHTML=this.parentElement.dataset.fallback;" 
-              >
-          `;
+
+        logoContent = `
+          <img
+            src="${channel.logoUrl}"
+            alt="${channel.name} logo"
+            class="channel-logo-image"
+            onerror="this.onerror=null; this.parentElement.innerHTML=this.parentElement.dataset.fallback;"
+          >
+        `;
+
       } else {
-          logoContent = fallbackSvg;
+
+        logoContent = fallbackSvg;
+
       }
 
       return `
-          <div 
-            onclick="playChannel(${channel.id}, '${channel.url}', '${channel.name}')"
-            class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50" 
-            data-id="${channel.id}">
-            <div class="flex items-center gap-3">
-              <div 
-                  class="channel-logo-container bg-sky-500/20 flex items-center justify-center border border-sky-400/50"
-                  data-fallback='${fallbackSvg}'
-              >
-                  ${logoContent} 
-              </div>
-              <div class="flex flex-col flex-1 min-w-0">
-                <span class="font-semibold text-base text-slate-50 truncate">${channel.name}</span>
-              </div>
+        <div
+          onclick="playChannel(${channel.id}, '${channel.url}', '${channel.name}')"
+          class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50"
+          data-id="${channel.id}"
+        >
+
+          <div class="flex items-center gap-3">
+
+            <div
+              class="channel-logo-container bg-sky-500/20 flex items-center justify-center border border-sky-400/50"
+              data-fallback='${fallbackSvg}'
+            >
+              ${logoContent}
             </div>
+
+            <div class="flex flex-col flex-1 min-w-0">
+
+              <span class="font-semibold text-base text-slate-50 truncate">
+                ${channel.name}
+              </span>
+
+            </div>
+
           </div>
+
+        </div>
       `;
-  }
-  
-  function switchServer(serverId) {
+    }
+
+    function switchServer(serverId) {
+
       if (!CHANNELS[serverId]) return;
 
       activeServer = serverId;
-      const channelListContainer = document.getElementById('channelList');
-      const serverButtons = document.querySelectorAll('.server-button');
-      
+
+      const channelListContainer =
+        document.getElementById('channelList');
+
+      const serverButtons =
+        document.querySelectorAll('.server-button');
+
       serverButtons.forEach(btn => {
-          btn.classList.remove('server-button-active');
-          if (btn.dataset.serverId === serverId) {
-              btn.classList.add('server-button-active');
-          }
+
+        btn.classList.remove('server-button-active');
+
+        if (btn.dataset.serverId === serverId) {
+          btn.classList.add('server-button-active');
+        }
+
       });
 
-      channelListContainer.innerHTML = ''; 
+      channelListContainer.innerHTML = '';
+
       CHANNELS[serverId].forEach(channel => {
-          channelListContainer.innerHTML += createChannelCard(channel);
+        channelListContainer.innerHTML +=
+          createChannelCard(channel);
       });
 
-      // إيقاف المشغل الحالي وتنظيفه عند التبديل
       if (hlsInstance) {
-          hlsInstance.destroy();
-          hlsInstance = null;
+        hlsInstance.destroy();
+        hlsInstance = null;
       }
-      
-      const playerContainer = document.getElementById("playerContainer");
-      
+
+      const playerContainer =
+        document.getElementById("playerContainer");
+
       playerContainer.innerHTML = `
-        <div id="playerPlaceholder" class="flex flex-col items-center gap-3 px-4 text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <circle cx="12" cy="12" r="9" stroke-width="1.4"></circle>
-              <path d="M10 9.5v5l4-2.5-4-2.5z" fill="currentColor" stroke-width="0.6" stroke="none"></path>
+        <div
+          id="playerPlaceholder"
+          class="flex flex-col items-center gap-3 px-4 text-center"
+        >
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-8 h-8 text-sky-300"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              stroke-width="1.4"
+            ></circle>
+
+            <path
+              d="M10 9.5v5l4-2.5-4-2.5z"
+              fill="currentColor"
+              stroke-width="0.6"
+              stroke="none"
+            ></path>
+
           </svg>
+
           <div class="space-y-1">
+
             <p class="font-semibold text-slate-100">
               اضغط على اسم القناة لبدء المشاهدة.
             </p>
+
             <p class="text-sm text-slate-400">
-              القناة الحالية: <span id="currentChannelLabel" class="font-semibold text-sky-300">لم يتم الاختيار</span>
+              القناة الحالية:
+              <span
+                id="currentChannelLabel"
+                class="font-semibold text-sky-300"
+              >
+                لم يتم الاختيار
+              </span>
             </p>
+
           </div>
+
         </div>
       `;
 
-      document.getElementById("currentChannelLabel").textContent = 'لم يتم الاختيار';
-      document.querySelectorAll('.channel-card-clickable').forEach(card => card.classList.remove('channel-card-active'));
-  }
+      document.getElementById(
+        "currentChannelLabel"
+      ).textContent = 'لم يتم الاختيار';
 
+      document
+        .querySelectorAll('.channel-card-clickable')
+        .forEach(card =>
+          card.classList.remove('channel-card-active')
+        );
+    }
 
-  function togglePages(status) {
-      const loginPage = document.getElementById("loginPage");
-      const channelsContent = document.getElementById("channelsContent");
-      
+    function togglePages(status) {
+
+      const loginPage =
+        document.getElementById("loginPage");
+
+      const channelsContent =
+        document.getElementById("channelsContent");
+
       if (status) {
-          loginPage.classList.add("hidden");
-          channelsContent.classList.remove("hidden");
-          document.body.style.justifyContent = 'flex-start';
+
+        loginPage.classList.add("hidden");
+
+        channelsContent.classList.remove("hidden");
+
+        document.body.style.justifyContent =
+          'flex-start';
+
       } else {
-          loginPage.classList.remove("hidden");
-          channelsContent.classList.add("hidden");
-          document.body.style.justifyContent = 'center';
-      }
-  }
-  
-  window.onload = function() {
-      togglePages(true); 
-      switchServer(activeServer); 
-  };
 
-  /**
-   * دالة لطلب وضع ملء الشاشة
-   */
-  function requestFullscreen(element) {
+        loginPage.classList.remove("hidden");
+
+        channelsContent.classList.add("hidden");
+
+        document.body.style.justifyContent =
+          'center';
+      }
+    }
+
+    window.onload = function() {
+
+      togglePages(true);
+
+      switchServer(activeServer);
+
+    };
+
+    function requestFullscreen(element) {
+
       if (element.requestFullscreen) {
-          element.requestFullscreen();
-      } else if (element.webkitRequestFullscreen) { /* Safari/iOS */
-          element.webkitRequestFullscreen();
-      } else if (element.msRequestFullscreen) { /* IE11 */
-          element.msRequestFullscreen();
+
+        element.requestFullscreen();
+
+      } else if (element.webkitRequestFullscreen) {
+
+        element.webkitRequestFullscreen();
+
+      } else if (element.msRequestFullscreen) {
+
+        element.msRequestFullscreen();
+
       }
-  }
 
-  /**
-   * تشغيل قناة البث المباشر باستخدام HLS.js
-   */
-  function playChannel(id, m3u8Url, name) {
-    
-    const originalUrl = m3u8Url; 
-    const playerContainer = document.getElementById("playerContainer");
-    const channelLabel = document.getElementById("currentChannelLabel");
-    
-    if (originalUrl === '') {
+    }
+
+    function playChannel(id, m3u8Url, name) {
+
+      const originalUrl = m3u8Url;
+
+      const playerContainer =
+        document.getElementById("playerContainer");
+
+      const channelLabel =
+        document.getElementById("currentChannelLabel");
+
+      if (originalUrl === '') {
+
         alert('لا يوجد رابط بث لهذه القناة حالياً.');
+
         return;
-    }
 
-    // تدمير المشغل القديم إذا كان يعمل
-    if (hlsInstance) {
+      }
+
+      if (hlsInstance) {
+
         hlsInstance.destroy();
+
         hlsInstance = null;
-    }
 
-    // إعداد واجهة الفيديو الأصلية بدلاً من Video.js
-    playerContainer.innerHTML = `
-      <video id="videoPlayer" controls playsinline></video>
-    `;
-    
-    const videoElement = document.getElementById('videoPlayer');
+      }
 
-    // تهيئة HLS.js
-    if (Hls.isSupported()) {
+      playerContainer.innerHTML = `
+        <video
+          id="videoPlayer"
+          controls
+          playsinline
+        ></video>
+      `;
+
+      const videoElement =
+        document.getElementById('videoPlayer');
+
+      if (Hls.isSupported()) {
+
         hlsInstance = new Hls({
-            debug: false,
+          debug: false
         });
+
         hlsInstance.loadSource(originalUrl);
+
         hlsInstance.attachMedia(videoElement);
-        
-        hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
-            videoElement.play().then(() => {
+
+        hlsInstance.on(
+          Hls.Events.MANIFEST_PARSED,
+          function() {
+
+            videoElement.play()
+              .then(() => {
+
                 requestFullscreen(videoElement);
-            }).catch(function(error) {
-                console.log('تم منع التشغيل التلقائي من المتصفح:', error);
-            });
-        });
-        
-        // التعامل مع أخطاء البث المباشر
-        hlsInstance.on(Hls.Events.ERROR, function (event, data) {
+
+              })
+              .catch(function(error) {
+
+                console.log(
+                  'تم منع التشغيل التلقائي من المتصفح:',
+                  error
+                );
+
+              });
+
+          }
+        );
+
+        hlsInstance.on(
+          Hls.Events.ERROR,
+          function(event, data) {
+
             if (data.fatal) {
-                switch (data.type) {
-                    case Hls.ErrorTypes.NETWORK_ERROR:
-                        console.error("خطأ في الشبكة، جاري المحاولة...");
-                        hlsInstance.startLoad();
-                        break;
-                    case Hls.ErrorTypes.MEDIA_ERROR:
-                        console.error("خطأ في الميديا، جاري الإصلاح...");
-                        hlsInstance.recoverMediaError();
-                        break;
-                    default:
-                        hlsInstance.destroy();
-                        break;
-                }
+
+              switch (data.type) {
+
+                case Hls.ErrorTypes.NETWORK_ERROR:
+
+                  console.error(
+                    "خطأ في الشبكة، جاري المحاولة..."
+                  );
+
+                  hlsInstance.startLoad();
+
+                  break;
+
+                case Hls.ErrorTypes.MEDIA_ERROR:
+
+                  console.error(
+                    "خطأ في الميديا، جاري الإصلاح..."
+                  );
+
+                  hlsInstance.recoverMediaError();
+
+                  break;
+
+                default:
+
+                  hlsInstance.destroy();
+
+                  break;
+
+              }
+
             }
-        });
 
-    } 
-    // لدعم متصفحات Safari و iOS التي تدعم HLS بشكل افتراضي
-    else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+          }
+        );
+
+      }
+
+      else if (
+        videoElement.canPlayType(
+          'application/vnd.apple.mpegurl'
+        )
+      ) {
+
         videoElement.src = originalUrl;
-        videoElement.addEventListener('loadedmetadata', function() {
-            videoElement.play().then(() => {
+
+        videoElement.addEventListener(
+          'loadedmetadata',
+          function() {
+
+            videoElement.play()
+              .then(() => {
+
                 requestFullscreen(videoElement);
-            }).catch(function(error) {
-                console.log('تم منع التشغيل التلقائي من المتصفح:', error);
-            });
-        });
+
+              })
+              .catch(function(error) {
+
+                console.log(
+                  'تم منع التشغيل التلقائي من المتصفح:',
+                  error
+                );
+
+              });
+
+          }
+        );
+
+      }
+
+      if (channelLabel) {
+
+        channelLabel.textContent = name;
+
+      }
+
+      const allChannelCards =
+        document.querySelectorAll(
+          '.channel-card-clickable'
+        );
+
+      allChannelCards.forEach(card =>
+        card.classList.remove(
+          'channel-card-active'
+        )
+      );
+
+      const clickedCard =
+        Array.from(allChannelCards)
+          .find(card =>
+            card.dataset.id == id
+          );
+
+      if (clickedCard) {
+
+        clickedCard.classList.add(
+          'channel-card-active'
+        );
+
+      }
+
     }
 
-    // تحديث واجهة المستخدم (تحديد القناة النشطة)
-    if (channelLabel) {
-      channelLabel.textContent = name;
-    }
-    
-    const allChannelCards = document.querySelectorAll('.channel-card-clickable');
-    allChannelCards.forEach(card => card.classList.remove('channel-card-active'));
-    
-    const clickedCard = Array.from(allChannelCards).find(card => card.dataset.id == id);
-    if(clickedCard) {
-        clickedCard.classList.add('channel-card-active');
-    }
-  }
-  
-  function shareSite() {
+    function shareSite() {
+
       const shareData = {
-          title: 'GO TV MAX',
-          text: 'شاهد كأس العالم 2026.',
-          url: window.location.href
+
+        title: 'GO TV MAX',
+
+        text: 'شاهد القنوات الرياضية مباشرة.',
+
+        url: window.location.href
+
       };
 
       if (navigator.share) {
-          navigator.share(shareData).catch(error => console.log('Error sharing', error));
+
+        navigator.share(shareData)
+          .catch(error =>
+            console.log(
+              'Error sharing',
+              error
+            )
+          );
+
       } else {
-          navigator.clipboard.writeText(shareData.url).then(() => {
-             alert(`تم نسخ رابط الموقع بنجاح! شاركه لتعم الفائدة: ${shareData.url}`);
+
+        navigator.clipboard
+          .writeText(shareData.url)
+          .then(() => {
+
+            alert(
+              `تم نسخ رابط الموقع بنجاح! شاركه لتعم الفائدة: ${shareData.url}`
+            );
+
           });
+
       }
-  }
-</script>
+
+    }
+
+  </script>
 
 </body>
 </html>
