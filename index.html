@@ -162,11 +162,6 @@ input:focus {
   isolation: isolate;
 }
 
-
-/*
-   الفيديو نفسه
-*/
-
 #videoPlayer {
 
   position: absolute;
@@ -185,12 +180,6 @@ input:focus {
 
   border: 0;
 }
-
-
-/*
-   نخفي الـ controls الأصلية
-   حتى لا يظهر شريطان
-*/
 
 #videoPlayer::-webkit-media-controls {
   display: none !important;
@@ -291,7 +280,7 @@ input:focus {
 
 
 /* =====================================================
-   TOP STATUS
+   TOP LIVE
    ===================================================== */
 
 .player-top-status {
@@ -308,7 +297,7 @@ input:focus {
 
   align-items: center;
 
-  justify-content: space-between;
+  justify-content: flex-start;
 
   pointer-events: none;
 
@@ -340,6 +329,11 @@ input:focus {
   font-weight: 700;
 }
 
+
+/* =====================================================
+   LIVE DOT - RED
+   ===================================================== */
+
 .live-dot {
 
   width: 8px;
@@ -348,10 +342,10 @@ input:focus {
 
   border-radius: 50%;
 
-  background: #22c55e;
+  background: #ef4444;
 
   box-shadow:
-    0 0 9px rgba(34,197,94,.9);
+    0 0 9px rgba(239,68,68,.9);
 
   animation:
     livePulse 1.5s infinite;
@@ -367,24 +361,6 @@ input:focus {
   50% {
     opacity: .45;
   }
-}
-
-.stability-status {
-
-  padding:
-    4px 9px;
-
-  border-radius: 999px;
-
-  background:
-    rgba(0,0,0,.55);
-
-  backdrop-filter:
-    blur(5px);
-
-  font-size: 10px;
-
-  color: #bae6fd;
 }
 
 
@@ -405,16 +381,11 @@ input:focus {
   z-index: 25;
 }
 
-
-/*
-   المعلومات فوق الشريط
-*/
-
 .progress-info {
 
   display: flex;
 
-  justify-content: space-between;
+  justify-content: flex-start;
 
   align-items: center;
 
@@ -429,11 +400,6 @@ input:focus {
   text-shadow:
     0 1px 4px #000;
 }
-
-
-/*
-   شريط واحد فقط
-*/
 
 .progress-track {
 
@@ -576,7 +542,7 @@ input:focus {
 
 
 /* =====================================================
-   MOBILE LANDSCAPE
+   MOBILE
    ===================================================== */
 
 @media (max-width: 768px) {
@@ -792,7 +758,6 @@ document.addEventListener(
   class="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8 w-full"
 >
 
-
 <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
 
@@ -805,7 +770,6 @@ document.addEventListener(
 >
 
 <div class="glass rounded-2xl p-4 md:p-6 shadow-2xl">
-
 
 <div class="player-header mb-4 text-center">
 
@@ -822,11 +786,6 @@ document.addEventListener(
   id="playerContainer"
   class="relative w-full rounded-xl bg-black border border-slate-800 shadow-inner flex items-center justify-center text-slate-400"
 >
-
-
-<!-- =================================================
-     PLACEHOLDER
-     ================================================= -->
 
 <div
   id="playerPlaceholder"
@@ -860,9 +819,7 @@ document.addEventListener(
 <div class="space-y-1">
 
 <p class="font-semibold text-slate-100">
-
 اضغط على اسم القناة لبدء المشاهدة.
-
 </p>
 
 <p class="text-sm text-slate-400">
@@ -881,7 +838,6 @@ document.addEventListener(
 </div>
 
 </div>
-
 
 </div>
 
@@ -911,7 +867,6 @@ document.addEventListener(
 </div>
 
 </div>
-
 
 </div>
 
@@ -1030,7 +985,6 @@ d="M9.197 16.59L9 20.25c.36 0 .518-.155.706-.341l1.692-1.647 3.507 2.565c.643.35
 </div>
 
 </div>
-
 
 </aside>
 
@@ -1158,6 +1112,7 @@ function createChannelCard(channel) {
       stroke-linecap="round"
       stroke-linejoin="round"
     >
+
       <rect
         x="2"
         y="7"
@@ -1169,6 +1124,7 @@ function createChannelCard(channel) {
       <polyline
         points="17 2 12 7 7 2"
       ></polyline>
+
     </svg>
   `;
 
@@ -1220,12 +1176,12 @@ function createChannelCard(channel) {
       <div class="flex items-center gap-3">
 
         <div
-          class="
-            channel-logo-container
-          "
+          class="channel-logo-container"
           data-fallback='${fallbackSvg}'
         >
+
           ${logoContent}
+
         </div>
 
         <div
@@ -1390,6 +1346,7 @@ function restorePlaceholder() {
             text-slate-400
           "
         >
+
           القناة الحالية:
 
           <span
@@ -1415,11 +1372,14 @@ function restorePlaceholder() {
       "currentChannelLabel"
     );
 
+
   if (label) {
 
     label.textContent =
       "لم يتم الاختيار";
+
   }
+
 }
 
 
@@ -1436,25 +1396,34 @@ function destroyPlayer() {
 
   if (bufferTimer) {
 
-    clearInterval(bufferTimer);
+    clearInterval(
+      bufferTimer
+    );
 
     bufferTimer = null;
+
   }
 
 
   if (healthTimer) {
 
-    clearInterval(healthTimer);
+    clearInterval(
+      healthTimer
+    );
 
     healthTimer = null;
+
   }
 
 
   if (retryTimer) {
 
-    clearTimeout(retryTimer);
+    clearTimeout(
+      retryTimer
+    );
 
     retryTimer = null;
+
   }
 
 
@@ -1473,6 +1442,7 @@ function destroyPlayer() {
     } catch (e) {}
 
     hlsInstance = null;
+
   }
 
 
@@ -1481,6 +1451,7 @@ function destroyPlayer() {
   currentStreamUrl = "";
 
   retryCount = 0;
+
 }
 
 
@@ -1513,7 +1484,7 @@ function createPlayerUI() {
     >
 
 
-      <!-- TOP -->
+      <!-- LIVE -->
 
       <div
         class="player-top-status"
@@ -1531,14 +1502,6 @@ function createPlayerUI() {
             LIVE
           </span>
 
-        </div>
-
-
-        <div
-          id="stabilityStatus"
-          class="stability-status"
-        >
-          جاري الاتصال...
         </div>
 
       </div>
@@ -1581,18 +1544,10 @@ function createPlayerUI() {
             Buffer: 0s
           </span>
 
-          <span
-            id="connectionText"
-          >
-            اتصال مستقر
-          </span>
-
         </div>
 
 
-        <!--
-          هذا هو شريط التقدم الوحيد
-        -->
+        <!-- شريط تقدم واحد فقط -->
 
         <div
           class="progress-track"
@@ -1622,6 +1577,7 @@ function createPlayerUI() {
               ▶
             </button>
 
+
             <button
               class="player-btn"
               onclick="mutePlayer()"
@@ -1645,6 +1601,7 @@ function createPlayerUI() {
             >
               LIVE
             </button>
+
 
             <button
               class="player-btn"
@@ -1674,6 +1631,7 @@ function createPlayerUI() {
   attachVideoEvents(
     currentVideo
   );
+
 }
 
 
@@ -1705,6 +1663,7 @@ function setLoading(
 
     loadingText.textContent =
       text;
+
   }
 
 
@@ -1714,63 +1673,16 @@ function setLoading(
       "visible"
     );
 
-  } else {
+  }
+
+  else {
 
     loading.classList.remove(
       "visible"
     );
+
   }
-}
 
-
-/* =====================================================
-   STATUS
-   ===================================================== */
-
-function setConnectionStatus(
-  text,
-  good = true
-) {
-
-  const el =
-    document.getElementById(
-      "connectionText"
-    );
-
-
-  if (!el) return;
-
-
-  el.textContent = text;
-
-
-  if (good) {
-
-    el.style.color =
-      "#86efac";
-
-  } else {
-
-    el.style.color =
-      "#fbbf24";
-  }
-}
-
-
-function setStabilityStatus(
-  text
-) {
-
-  const el =
-    document.getElementById(
-      "stabilityStatus"
-    );
-
-
-  if (el) {
-
-    el.textContent = text;
-  }
 }
 
 
@@ -1788,6 +1700,7 @@ function startBufferMonitor(
     clearInterval(
       bufferTimer
     );
+
   }
 
 
@@ -1796,7 +1709,8 @@ function startBufferMonitor(
       function() {
 
         if (
-          generation !== playerGeneration
+          generation !==
+          playerGeneration
         ) {
 
           clearInterval(
@@ -1804,6 +1718,7 @@ function startBufferMonitor(
           );
 
           return;
+
         }
 
 
@@ -1813,6 +1728,7 @@ function startBufferMonitor(
         ) {
 
           return;
+
         }
 
 
@@ -1853,7 +1769,9 @@ function startBufferMonitor(
                 );
 
               break;
+
             }
+
           }
 
         } catch (e) {}
@@ -1881,13 +1799,14 @@ function startBufferMonitor(
 
           text.textContent =
             `Buffer: ${seconds}s`;
+
         }
 
 
         if (progress) {
 
           /*
-             الحد البصري 30 ثانية.
+             الشريط يمثل حتى 30 ثانية
           */
 
           const percent =
@@ -1908,11 +1827,6 @@ function startBufferMonitor(
             progress.style.background =
               "#ef4444";
 
-            setConnectionStatus(
-              "Buffer منخفض",
-              false
-            );
-
           }
 
           else if (
@@ -1922,11 +1836,6 @@ function startBufferMonitor(
             progress.style.background =
               "#f59e0b";
 
-            setConnectionStatus(
-              "يتم تثبيت البث",
-              false
-            );
-
           }
 
           else {
@@ -1934,63 +1843,15 @@ function startBufferMonitor(
             progress.style.background =
               "#38bdf8";
 
-            setConnectionStatus(
-              "اتصال مستقر",
-              true
-            );
-          }
-        }
-
-
-        /*
-           مراقبة التأخير عن البث المباشر
-        */
-
-        if (
-          hlsInstance &&
-          hlsInstance.liveSyncPosition
-        ) {
-
-          const livePosition =
-            hlsInstance.liveSyncPosition;
-
-          const latency =
-            livePosition -
-            video.currentTime;
-
-
-          if (
-            latency > 20
-          ) {
-
-            setStabilityStatus(
-              "مزامنة البث..."
-            );
-
-          }
-
-          else if (
-            latency > 10
-          ) {
-
-            setStabilityStatus(
-              "تثبيت الاتصال"
-            );
-
-          }
-
-          else {
-
-            setStabilityStatus(
-              "البث مستقر"
-            );
           }
 
         }
+
 
       },
       500
     );
+
 }
 
 
@@ -2011,25 +1872,18 @@ function attachVideoEvents(
 
       setLoading(false);
 
-      setConnectionStatus(
-        "اتصال مستقر",
-        true
-      );
-
-      setStabilityStatus(
-        "البث مستقر"
-      );
-
 
       const button =
         document.getElementById(
           "playButton"
         );
 
+
       if (button) {
 
         button.textContent =
           "Ⅱ";
+
       }
 
     }
@@ -2045,11 +1899,14 @@ function attachVideoEvents(
           "playButton"
         );
 
+
       if (button) {
 
         button.textContent =
           "▶";
+
       }
+
     }
   );
 
@@ -2063,10 +1920,6 @@ function attachVideoEvents(
         "تثبيت البث..."
       );
 
-      setConnectionStatus(
-        "جاري تثبيت الاتصال",
-        false
-      );
 
       silentRecovery(
         "waiting"
@@ -2085,10 +1938,6 @@ function attachVideoEvents(
         "إعادة تثبيت البث..."
       );
 
-      setConnectionStatus(
-        "إعادة تثبيت الاتصال",
-        false
-      );
 
       silentRecovery(
         "stalled"
@@ -2119,6 +1968,7 @@ function attachVideoEvents(
       ) {
 
         setLoading(false);
+
       }
 
     }
@@ -2129,21 +1979,18 @@ function attachVideoEvents(
     "timeupdate",
     function() {
 
-      /*
-         إذا عاد البث للعمل
-         نلغي حالة الاستعادة.
-      */
-
       if (
         !video.paused &&
         video.readyState >= 3
       ) {
 
         isRecovering = false;
+
       }
 
     }
   );
+
 }
 
 
@@ -2166,10 +2013,6 @@ function createHls() {
     startLevel: -1,
 
 
-    /*
-       Buffer
-    */
-
     maxBufferLength: 30,
 
     maxMaxBufferLength: 60,
@@ -2177,20 +2020,12 @@ function createHls() {
     backBufferLength: 30,
 
 
-    /*
-       Live
-    */
-
     liveSyncDurationCount: 4,
 
     liveMaxLatencyDurationCount: 12,
 
     maxLiveSyncPlaybackRate: 1.05,
 
-
-    /*
-       ABR
-    */
 
     abrEwmaFastLive: 3,
 
@@ -2201,20 +2036,12 @@ function createHls() {
     abrBandWidthUpFactor: 0.70,
 
 
-    /*
-       Manifest retry
-    */
-
     manifestLoadingMaxRetry: 8,
 
     manifestLoadingRetryDelay: 1000,
 
     manifestLoadingMaxRetryTimeout: 10000,
 
-
-    /*
-       Level retry
-    */
 
     levelLoadingMaxRetry: 8,
 
@@ -2223,10 +2050,6 @@ function createHls() {
     levelLoadingMaxRetryTimeout: 10000,
 
 
-    /*
-       Fragment retry
-    */
-
     fragLoadingMaxRetry: 10,
 
     fragLoadingRetryDelay: 1000,
@@ -2234,15 +2057,12 @@ function createHls() {
     fragLoadingMaxRetryTimeout: 10000,
 
 
-    /*
-       Network
-    */
-
     maxFragLookUpTolerance: 0.25,
 
     maxLoadingDelay: 4
 
   });
+
 }
 
 
@@ -2262,13 +2082,9 @@ function playChannel(
   ) {
 
     return;
+
   }
 
-
-  /*
-     كل قناة جديدة تلغي
-     كل عمليات القناة القديمة.
-  */
 
   destroyPlayer();
 
@@ -2297,12 +2113,9 @@ function playChannel(
 
     label.textContent =
       name;
+
   }
 
-
-  /*
-     Active card
-  */
 
   document
     .querySelectorAll(
@@ -2333,12 +2146,9 @@ function playChannel(
     card.classList.add(
       "channel-card-active"
     );
+
   }
 
-
-  /*
-     إنشاء اللاعب
-  */
 
   createPlayerUI();
 
@@ -2359,11 +2169,6 @@ function playChannel(
   setLoading(
     true,
     "جاري الاتصال بالبث..."
-  );
-
-
-  setStabilityStatus(
-    "جاري الاتصال..."
   );
 
 
@@ -2414,9 +2219,8 @@ function playChannel(
 
         retryCount = 0;
 
-        setLoading(
-          false
-        );
+
+        setLoading(false);
 
 
         startBufferMonitor(
@@ -2425,26 +2229,12 @@ function playChannel(
         );
 
 
-        /*
-           التشغيل بعد ضغطة المستخدم
-           يسمح بمحاولة fullscreen.
-        */
-
         video
           .play()
           .then(
             function() {
 
               setLoading(false);
-
-              setConnectionStatus(
-                "اتصال مستقر",
-                true
-              );
-
-              setStabilityStatus(
-                "البث مستقر"
-              );
 
               requestFullscreenAndLandscape();
 
@@ -2453,9 +2243,7 @@ function playChannel(
           .catch(
             function() {
 
-              setLoading(
-                false
-              );
+              setLoading(false);
 
             }
           );
@@ -2475,6 +2263,7 @@ function playChannel(
           setLoading(false);
 
           isRecovering = false;
+
         }
 
       }
@@ -2491,6 +2280,7 @@ function playChannel(
         ) {
 
           setLoading(false);
+
         }
 
       }
@@ -2510,10 +2300,6 @@ function playChannel(
         ) return;
 
 
-        /*
-           Network
-        */
-
         if (
           data.fatal &&
           data.type ===
@@ -2525,12 +2311,9 @@ function playChannel(
           );
 
           return;
+
         }
 
-
-        /*
-           Media
-        */
 
         if (
           data.fatal &&
@@ -2541,12 +2324,9 @@ function playChannel(
           silentMediaRecovery();
 
           return;
+
         }
 
-
-        /*
-           Fatal unknown
-        */
 
         if (
           data.fatal
@@ -2564,7 +2344,6 @@ function playChannel(
 
   /*
      Native HLS
-     Safari / iOS
   */
 
   else if (
@@ -2616,17 +2395,12 @@ function playChannel(
 
   else {
 
-    setLoading(
-      false
-    );
+    setLoading(false);
 
     return;
+
   }
 
-
-  /*
-     مراقبة الصحة
-  */
 
   startHealthMonitor(
     video,
@@ -2637,7 +2411,7 @@ function playChannel(
 
 
 /* =====================================================
-   SILENT HLS RECOVERY
+   HLS RECOVERY
    ===================================================== */
 
 function silentHlsRecovery(
@@ -2658,17 +2432,6 @@ function silentHlsRecovery(
   );
 
 
-  setConnectionStatus(
-    "جاري إعادة الاتصال",
-    false
-  );
-
-
-  setStabilityStatus(
-    "إعادة الاتصال..."
-  );
-
-
   if (
     hlsInstance
   ) {
@@ -2676,8 +2439,6 @@ function silentHlsRecovery(
     try {
 
       hlsInstance.startLoad();
-
-      hlsInstance.recoverMediaError();
 
     } catch (e) {}
 
@@ -2716,12 +2477,6 @@ function silentMediaRecovery() {
   );
 
 
-  setConnectionStatus(
-    "إصلاح الاتصال",
-    false
-  );
-
-
   if (
     hlsInstance
   ) {
@@ -2735,6 +2490,7 @@ function silentMediaRecovery() {
       silentFullRecovery();
 
       return;
+
     }
 
   }
@@ -2770,10 +2526,6 @@ function silentFullRecovery() {
   retryCount++;
 
 
-  /*
-     Backoff ذكي
-  */
-
   const delay =
     Math.min(
       15000,
@@ -2794,17 +2546,6 @@ function silentFullRecovery() {
   );
 
 
-  setConnectionStatus(
-    "إعادة الاتصال",
-    false
-  );
-
-
-  setStabilityStatus(
-    "استعادة البث..."
-  );
-
-
   retryTimer =
     setTimeout(
       function() {
@@ -2817,11 +2558,6 @@ function silentFullRecovery() {
           playerGeneration
         ) return;
 
-
-        /*
-           إعادة بناء HLS فقط
-           بعد فشل الاستعادة.
-        */
 
         const oldVideo =
           currentVideo;
@@ -2843,6 +2579,7 @@ function silentFullRecovery() {
         ) {
 
           try {
+
             hlsInstance.destroy();
 
           } catch (e) {}
@@ -2851,10 +2588,6 @@ function silentFullRecovery() {
 
         }
 
-
-        /*
-           إنشاء HLS جديد
-        */
 
         if (
           Hls.isSupported() &&
@@ -2896,6 +2629,7 @@ function silentFullRecovery() {
             function() {
 
               retryCount = 0;
+
 
               setLoading(
                 false
@@ -2945,7 +2679,7 @@ function silentFullRecovery() {
 
 
 /* =====================================================
-   WAITING / STALLED RECOVERY
+   WAITING / STALLED
    ===================================================== */
 
 function silentRecovery(
@@ -2960,11 +2694,6 @@ function silentRecovery(
   isRecovering = true;
 
 
-  /*
-     لا نعيد إنشاء المشغل مباشرة.
-     نعطي HLS فرصة أولاً.
-  */
-
   if (
     hlsInstance
   ) {
@@ -2977,11 +2706,6 @@ function silentRecovery(
 
   }
 
-
-  /*
-     إذا استمر التوقف
-     نعمل استعادة كاملة.
-  */
 
   setTimeout(
     function() {
@@ -3000,6 +2724,7 @@ function silentRecovery(
         silentFullRecovery();
 
       }
+
       else {
 
         isRecovering = false;
@@ -3031,6 +2756,7 @@ function startHealthMonitor(
     clearInterval(
       healthTimer
     );
+
   }
 
 
@@ -3055,6 +2781,7 @@ function startHealthMonitor(
           );
 
           return;
+
         }
 
 
@@ -3063,11 +2790,6 @@ function startHealthMonitor(
         ) return;
 
 
-        /*
-           إذا كان الفيديو متوقفاً
-           لا نتدخل بسرعة.
-        */
-
         if (
           video.paused
         ) {
@@ -3075,6 +2797,7 @@ function startHealthMonitor(
           stuckCounter = 0;
 
           return;
+
         }
 
 
@@ -3090,6 +2813,7 @@ function startHealthMonitor(
           stuckCounter++;
 
         }
+
         else {
 
           stuckCounter = 0;
@@ -3100,10 +2824,6 @@ function startHealthMonitor(
         lastTime =
           currentTime;
 
-
-        /*
-           توقف أكثر من 5 ثوان
-        */
 
         if (
           stuckCounter >= 5
@@ -3117,11 +2837,6 @@ function startHealthMonitor(
 
         }
 
-
-        /*
-           إذا كان HLS يحمل ولكن الفيديو
-           بعيد جداً عن live edge.
-        */
 
         if (
           hlsInstance &&
@@ -3155,6 +2870,7 @@ function startHealthMonitor(
       },
       1000
     );
+
 }
 
 
@@ -3217,6 +2933,7 @@ function mutePlayer() {
       currentVideo.muted
         ? "🔇"
         : "🔊";
+
   }
 
 }
@@ -3310,10 +3027,6 @@ async function requestFullscreenAndLandscape() {
   } catch (e) {}
 
 
-  /*
-     محاولة تثبيت الوضع الأفقي
-  */
-
   try {
 
     if (
@@ -3360,6 +3073,7 @@ function toggleFullscreen() {
     }
 
     return;
+
   }
 
 
@@ -3415,13 +3129,14 @@ function togglePages(
 
     document.body.style.justifyContent =
       "center";
+
   }
 
 }
 
 
 /* =====================================================
-   LOGIN CHECK
+   LOGIN
    ===================================================== */
 
 function checkCode() {
