@@ -1,862 +1,3299 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GO TV MAX</title>  <script src="https://cdn.tailwindcss.com"></script>  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght@700&display=swap" rel="stylesheet">  <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>  <style>
-    body {
-      background: #020617;
-      font-family: 'Cairo', sans-serif;
-      min-height: 100vh;
-      color: #f8fafc;
-      padding-top: 20px;
-      padding-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
 
-    .title-font {
-      font-family: 'Changa', sans-serif;
-    }
+<meta charset="UTF-8">
 
-    .glass {
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,184,0.2);
-    }
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
 
-    .login-card {
-      background: rgba(15,23,42,0.95);
-      border: 1px solid rgba(148,163,184,0.2);
-    }
+<title>GO TV MAX</title>
 
-    input:focus {
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 3px rgba(56,189,248,0.5);
-    }
+<script src="https://cdn.tailwindcss.com"></script>
 
-    .channel-card-clickable {
-      transition: all 0.25s ease;
-      cursor: pointer;
-    }
+<link
+  href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Changa:wght@700&display=swap"
+  rel="stylesheet"
+>
 
-    .channel-card-clickable:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 30px rgba(56,189,248,0.3);
-      border-color: rgba(56,189,248,0.5);
-    }
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
 
-    .channel-card-active {
-      box-shadow: 0 0 20px rgba(56,189,248,0.6);
-      background: radial-gradient(
-        circle at 0% 0%,
-        rgba(56,189,248,0.15),
-        rgba(15,23,42,0.92)
-      );
-      border-color: #38bdf8;
-    }
+<style>
 
-    .server-button-active {
-      background-color: #0c4a6e;
-      border-color: #38bdf8;
-      box-shadow: 0 0 5px rgba(56,189,248,0.5);
-    }
+* {
+  box-sizing: border-box;
+}
 
-    #playerContainer {
-      position: relative;
-      overflow: hidden;
-    }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #020617;
+}
 
-    .player-header {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
+body {
 
-    .channel-logo-container {
-      position: relative;
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
+  font-family: 'Cairo', sans-serif;
 
-    .channel-logo-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+  min-height: 100vh;
 
-    #videoPlayer {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      border-radius: 0.75rem;
-      background-color: #000;
-      outline: none;
-    }
+  color: #f8fafc;
 
-    /* =====================================================
-       LIVE BUFFER BAR
-       ===================================================== */
+  padding-top: 20px;
+  padding-bottom: 20px;
 
-    #liveStatusBar {
-      position: absolute;
-      bottom: 10px;
-      left: 12px;
-      right: 12px;
-      z-index: 20;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    #liveStatusBar.visible {
-      opacity: 1;
-    }
+  -webkit-user-select: none;
+  user-select: none;
 
-    .live-status-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 5px;
-      font-size: 11px;
-      font-weight: 700;
-      text-shadow: 0 1px 3px #000;
-    }
+  overflow-x: hidden;
+}
 
-    .live-indicator {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
+.title-font {
+  font-family: 'Changa', sans-serif;
+}
 
-    .live-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #ef4444;
-      box-shadow: 0 0 8px rgba(239,68,68,0.9);
-    }
+.glass {
 
-    .buffer-track {
-      height: 5px;
-      width: 100%;
-      background: rgba(255,255,255,0.22);
-      border-radius: 999px;
-      overflow: hidden;
-      backdrop-filter: blur(4px);
-    }
+  background: rgba(15,23,42,0.92);
 
-    #bufferProgress {
-      height: 100%;
-      width: 0%;
-      background: #38bdf8;
-      border-radius: 999px;
-      transition: width 0.25s linear;
-      box-shadow: 0 0 8px rgba(56,189,248,0.8);
-    }
+  border: 1px solid rgba(148,163,184,0.2);
 
-    #bufferText {
-      color: #bae6fd;
-    }
+  backdrop-filter: blur(10px);
 
-    /* =====================================================
-       LOADING
-       ===================================================== */
+  -webkit-backdrop-filter: blur(10px);
+}
 
-    .player-loading {
-      position: absolute;
-      inset: 0;
-      z-index: 15;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.45);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
+.login-card {
 
-    .player-loading.visible {
-      opacity: 1;
-    }
+  background: rgba(15,23,42,0.97);
 
-    .loading-spinner {
-      width: 38px;
-      height: 38px;
-      border: 3px solid rgba(255,255,255,0.18);
-      border-top-color: #38bdf8;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+  border: 1px solid rgba(148,163,184,0.2);
+}
 
-    .loading-text {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #cbd5e1;
-    }
+input:focus {
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style></head><body class="text-slate-100">  <script>
-    document.onkeydown = function(e) {
-      if (
-        e.key === "F12" ||
-        (e.ctrlKey && e.shiftKey && (
-          e.key === 'I' ||
-          e.key === 'C' ||
-          e.key === 'J'
-        )) ||
-        (e.ctrlKey && e.key === 'U')
-      ) {
-        return false;
-      }
+  border-color: #38bdf8;
 
-      if (e.ctrlKey && (e.key === 'c' || e.key === 'x')) {
-        e.preventDefault();
-      }
-    };
+  box-shadow:
+    0 0 0 3px rgba(56,189,248,0.25);
+}
 
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    document.addEventListener('selectstart', event => event.preventDefault());
-    document.addEventListener('copy', event => event.preventDefault());
-    document.addEventListener('cut', event => event.preventDefault());
-  </script>  <div
-    id="loginPage"
-    class="hidden w-full h-screen fixed top-0 left-0 z-50 flex items-center justify-center backdrop-blur-sm bg-gray-900/80"
+.channel-card-clickable {
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+
+  cursor: pointer;
+}
+
+.channel-card-clickable:hover {
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 25px rgba(56,189,248,0.25);
+
+  border-color:
+    rgba(56,189,248,0.5);
+}
+
+.channel-card-active {
+
+  box-shadow:
+    0 0 22px rgba(56,189,248,0.55);
+
+  background:
+    radial-gradient(
+      circle at 0% 0%,
+      rgba(56,189,248,0.16),
+      rgba(15,23,42,0.94)
+    );
+
+  border-color:
+    #38bdf8 !important;
+}
+
+.server-button-active {
+
+  background-color:
+    #0c4a6e;
+
+  border-color:
+    #38bdf8;
+
+  box-shadow:
+    0 0 7px rgba(56,189,248,0.5);
+}
+
+
+/* =====================================================
+   PLAYER
+   ===================================================== */
+
+#playerContainer {
+
+  position: relative;
+
+  overflow: hidden;
+
+  background: #000;
+
+  aspect-ratio: 16 / 9;
+
+  width: 100%;
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(148,163,184,0.18);
+
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,.7),
+    0 10px 40px rgba(0,0,0,.35);
+
+  isolation: isolate;
+}
+
+
+/*
+   الفيديو نفسه
+*/
+
+#videoPlayer {
+
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+
+  height: 100%;
+
+  background: #000;
+
+  object-fit: contain;
+
+  outline: none;
+
+  border: 0;
+}
+
+
+/*
+   نخفي الـ controls الأصلية
+   حتى لا يظهر شريطان
+*/
+
+#videoPlayer::-webkit-media-controls {
+  display: none !important;
+}
+
+#videoPlayer::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+
+
+/* =====================================================
+   PLAYER OVERLAY
+   ===================================================== */
+
+.player-overlay {
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 10;
+
+  pointer-events: none;
+}
+
+
+/* =====================================================
+   LOADING
+   ===================================================== */
+
+.player-loading {
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 30;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background:
+    rgba(0,0,0,.40);
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  transition:
+    opacity .2s ease;
+}
+
+.player-loading.visible {
+  opacity: 1;
+}
+
+.loading-spinner {
+
+  width: 42px;
+
+  height: 42px;
+
+  border-radius: 50%;
+
+  border:
+    3px solid rgba(255,255,255,.15);
+
+  border-top-color:
+    #38bdf8;
+
+  animation:
+    spin .75s linear infinite;
+}
+
+.loading-text {
+
+  margin-top: 10px;
+
+  font-size: 12px;
+
+  color: #e2e8f0;
+
+  text-shadow:
+    0 1px 4px #000;
+}
+
+@keyframes spin {
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =====================================================
+   TOP STATUS
+   ===================================================== */
+
+.player-top-status {
+
+  position: absolute;
+
+  top: 12px;
+
+  left: 12px;
+
+  right: 12px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  pointer-events: none;
+
+  text-shadow:
+    0 1px 5px #000;
+}
+
+.live-badge {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding:
+    4px 9px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(0,0,0,.55);
+
+  backdrop-filter:
+    blur(5px);
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+.live-dot {
+
+  width: 8px;
+
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #22c55e;
+
+  box-shadow:
+    0 0 9px rgba(34,197,94,.9);
+
+  animation:
+    livePulse 1.5s infinite;
+}
+
+@keyframes livePulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .45;
+  }
+}
+
+.stability-status {
+
+  padding:
+    4px 9px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(0,0,0,.55);
+
+  backdrop-filter:
+    blur(5px);
+
+  font-size: 10px;
+
+  color: #bae6fd;
+}
+
+
+/* =====================================================
+   SINGLE PROGRESS BAR
+   ===================================================== */
+
+.player-bottom {
+
+  position: absolute;
+
+  left: 12px;
+
+  right: 12px;
+
+  bottom: 10px;
+
+  z-index: 25;
+}
+
+
+/*
+   المعلومات فوق الشريط
+*/
+
+.progress-info {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 5px;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  color: #e2e8f0;
+
+  text-shadow:
+    0 1px 4px #000;
+}
+
+
+/*
+   شريط واحد فقط
+*/
+
+.progress-track {
+
+  width: 100%;
+
+  height: 6px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255,255,255,.22);
+
+  overflow: hidden;
+
+  box-shadow:
+    0 1px 5px rgba(0,0,0,.5);
+}
+
+#bufferProgress {
+
+  height: 100%;
+
+  width: 0%;
+
+  border-radius: 999px;
+
+  background:
+    #38bdf8;
+
+  box-shadow:
+    0 0 10px rgba(56,189,248,.85);
+
+  transition:
+    width .35s ease,
+    background .25s ease;
+}
+
+
+/* =====================================================
+   PLAYER BUTTONS
+   ===================================================== */
+
+.player-buttons {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-top: 8px;
+
+  pointer-events: auto;
+}
+
+.player-buttons-right,
+.player-buttons-left {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.player-btn {
+
+  width: 34px;
+
+  height: 30px;
+
+  border: 0;
+
+  border-radius: 8px;
+
+  background:
+    rgba(0,0,0,.58);
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition:
+    background .2s ease,
+    transform .2s ease;
+}
+
+.player-btn:hover {
+
+  background:
+    rgba(14,165,233,.65);
+
+  transform: scale(1.04);
+}
+
+.player-btn:active {
+  transform: scale(.95);
+}
+
+
+/* =====================================================
+   FULLSCREEN
+   ===================================================== */
+
+#playerContainer:fullscreen {
+
+  width: 100vw;
+
+  height: 100vh;
+
+  max-width: none;
+
+  aspect-ratio: auto;
+
+  border: 0;
+
+  border-radius: 0;
+
+  background: #000;
+}
+
+#playerContainer:-webkit-full-screen {
+
+  width: 100vw;
+
+  height: 100vh;
+
+  border: 0;
+
+  border-radius: 0;
+
+  background: #000;
+}
+
+
+/* =====================================================
+   MOBILE LANDSCAPE
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+  body {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  #playerContainer {
+    border-radius: 10px;
+  }
+
+  .player-bottom {
+    left: 8px;
+    right: 8px;
+    bottom: 7px;
+  }
+
+  .player-top-status {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+  }
+
+}
+
+
+/* =====================================================
+   LOGO
+   ===================================================== */
+
+.channel-logo-container {
+
+  position: relative;
+
+  width: 44px;
+
+  height: 44px;
+
+  flex-shrink: 0;
+
+  border-radius: 9px;
+
+  overflow: hidden;
+
+  background:
+    rgba(14,165,233,.12);
+
+  border:
+    1px solid rgba(56,189,248,.4);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.channel-logo-image {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+/* =====================================================
+   HIDE
+   ===================================================== */
+
+.hidden {
+  display: none !important;
+}
+
+</style>
+
+</head>
+
+
+<body class="text-slate-100">
+
+
+<script>
+
+/* =====================================================
+   BASIC PROTECTION
+   ===================================================== */
+
+document.onkeydown = function(e) {
+
+  if (
+    e.key === "F12" ||
+
+    (e.ctrlKey &&
+      e.shiftKey &&
+      (
+        e.key === "I" ||
+        e.key === "C" ||
+        e.key === "J"
+      )
+    ) ||
+
+    (e.ctrlKey &&
+      e.key === "U")
+  ) {
+
+    e.preventDefault();
+
+    return false;
+  }
+
+  if (
+    e.ctrlKey &&
+    (
+      e.key === "c" ||
+      e.key === "x"
+    )
+  ) {
+
+    e.preventDefault();
+  }
+
+};
+
+document.addEventListener(
+  "contextmenu",
+  e => e.preventDefault()
+);
+
+document.addEventListener(
+  "selectstart",
+  e => e.preventDefault()
+);
+
+document.addEventListener(
+  "copy",
+  e => e.preventDefault()
+);
+
+document.addEventListener(
+  "cut",
+  e => e.preventDefault()
+);
+
+</script>
+
+
+<!-- ===================================================
+     LOGIN
+     =================================================== -->
+
+<div
+  id="loginPage"
+  class="hidden w-full h-screen fixed top-0 left-0 z-50 flex items-center justify-center backdrop-blur-sm bg-gray-900/80"
+>
+
+  <div
+    class="login-card rounded-2xl p-6 md:p-8 shadow-2xl max-w-sm w-full space-y-6"
   >
-    <div class="login-card rounded-2xl p-6 md:p-8 shadow-2xl max-w-sm w-full space-y-6">  <h1 class="text-3xl font-bold text-center text-sky-400">
-    GO TV MAX
-  </h1>
 
-  <p class="text-center text-slate-400 text-sm font-semibold">
-    بث مباشر للقنوات الرياضية والعالمية مجاناً
-  </p>
-
-  <div class="space-y-4">
-
-    <input
-      type="password"
-      id="passCodeInput"
-      class="w-full px-4 py-3 text-lg text-center bg-slate-800 border-2 border-slate-700 rounded-lg focus:outline-none transition text-slate-100"
-      placeholder="أدخل رمز المرور"
-      maxlength="4"
-      onkeyup="if(this.value.length === 4) checkCode();"
+    <h1
+      class="text-3xl font-bold text-center text-sky-400"
     >
+      GO TV MAX
+    </h1>
 
-    <button
-      id="loginBtn"
-      onclick="checkCode()"
-      class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition duration-300"
+    <p
+      class="text-center text-slate-400 text-sm font-semibold"
     >
-      دخول
-    </button>
+      بث مباشر للقنوات الرياضية والعالمية مجاناً
+    </p>
 
-    <p id="message" class="text-center text-sm text-red-400 h-5"></p>
+    <div class="space-y-4">
+
+      <input
+        type="password"
+        id="passCodeInput"
+        class="w-full px-4 py-3 text-lg text-center bg-slate-800 border-2 border-slate-700 rounded-lg focus:outline-none transition text-slate-100"
+        placeholder="أدخل رمز المرور"
+        maxlength="4"
+        onkeyup="if(this.value.length === 4) checkCode();"
+      >
+
+      <button
+        id="loginBtn"
+        onclick="checkCode()"
+        class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition duration-300"
+      >
+        دخول
+      </button>
+
+      <p
+        id="message"
+        class="text-center text-sm text-red-400 h-5"
+      ></p>
+
+    </div>
 
   </div>
+
 </div>
 
-  </div>  <main
-    id="channelsContent"
-    class="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8 w-full"
-  ><div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
-  <section class="xl:col-span-3 space-y-5 order-1 xl:order-none">
+<!-- ===================================================
+     MAIN
+     =================================================== -->
 
-    <div class="glass rounded-2xl p-4 md:p-6 shadow-2xl">
+<main
+  id="channelsContent"
+  class="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8 w-full"
+>
 
-      <div class="player-header mb-4">
 
-        <h1 class="player-title title-font text-2xl font-bold text-sky-200">
-          GO TV MAX
-        </h1>
+<div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+
+
+<!-- ===================================================
+     PLAYER
+     =================================================== -->
+
+<section
+  class="xl:col-span-3 space-y-5 order-1 xl:order-none"
+>
+
+<div class="glass rounded-2xl p-4 md:p-6 shadow-2xl">
+
+
+<div class="player-header mb-4 text-center">
+
+<h1
+  class="player-title title-font text-2xl font-bold text-sky-200"
+>
+  GO TV MAX
+</h1>
+
+</div>
+
+
+<div
+  id="playerContainer"
+  class="relative w-full rounded-xl bg-black border border-slate-800 shadow-inner flex items-center justify-center text-slate-400"
+>
+
+
+<!-- =================================================
+     PLACEHOLDER
+     ================================================= -->
+
+<div
+  id="playerPlaceholder"
+  class="flex flex-col items-center gap-3 px-4 text-center"
+>
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  class="w-10 h-10 text-sky-300"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+>
+
+<circle
+  cx="12"
+  cy="12"
+  r="9"
+  stroke-width="1.4"
+></circle>
+
+<path
+  d="M10 9.5v5l4-2.5-4-2.5z"
+  fill="currentColor"
+  stroke="none"
+></path>
+
+</svg>
+
+
+<div class="space-y-1">
+
+<p class="font-semibold text-slate-100">
+
+اضغط على اسم القناة لبدء المشاهدة.
+
+</p>
+
+<p class="text-sm text-slate-400">
+
+القناة الحالية:
+
+<span
+  id="currentChannelLabel"
+  class="font-semibold text-sky-300"
+>
+  لم يتم الاختيار
+</span>
+
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =================================================
+     SERVER
+     ================================================= -->
+
+<div class="mt-4 border-t border-slate-800 pt-4">
+
+<div
+  class="flex flex-wrap gap-1 justify-center"
+  id="allServersContainer"
+>
+
+<button
+  onclick="switchServer('server1')"
+  id="btn-server1"
+  class="py-0.5 px-2 text-xs font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button server-button-active"
+  data-server-id="server1"
+>
+
+قنوات رياضية بواسطة Rahomi
+
+</button>
+
+</div>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+<!-- ===================================================
+     SIDEBAR
+     =================================================== -->
+
+<aside
+  class="space-y-6 xl:col-span-1 order-2 xl:order-none"
+>
+
+
+<div
+  class="glass rounded-2xl p-4 md:p-5 shadow-xl"
+>
+
+<h2
+  class="title-font text-xl font-bold text-sky-200 mb-4"
+>
+  القنوات
+</h2>
+
+
+<div
+  class="flex flex-col gap-3"
+  id="channelList"
+></div>
+
+</div>
+
+
+<div
+  class="glass rounded-2xl p-4 md:p-5 shadow-xl border-sky-400/50"
+>
+
+<div
+  class="flex flex-col items-center justify-center gap-3"
+>
+
+
+<a
+  href="https://t.me/GOTV_RI"
+  target="_blank"
+  class="w-full"
+>
+
+<button
+  class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/50"
+>
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  class="w-5 h-5"
+  viewBox="0 0 24 24"
+  fill="currentColor"
+>
+
+<path
+d="M9.197 16.59L9 20.25c.36 0 .518-.155.706-.341l1.692-1.647 3.507 2.565c.643.354 1.097.168 1.266-.596l2.295-10.785c.234-.944-.34-1.314-.964-1.085L3.77 11.01c-.93.36-.916.879-.158 1.113l3.94 1.227 9.146-5.77c.43-.262.825-.117.501.144">
+</path>
+
+</svg>
+
+حمل تطبيقنا على أجهزة الأندرويد
+
+</button>
+
+</a>
+
+
+<button
+  onclick="shareSite()"
+  class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-semibold bg-sky-600/30 hover:bg-sky-600/50 transition"
+>
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  class="w-4 h-4"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+
+<circle cx="18" cy="5" r="3"></circle>
+
+<circle cx="6" cy="12" r="3"></circle>
+
+<circle cx="18" cy="19" r="3"></circle>
+
+<line
+  x1="8.59"
+  y1="13.51"
+  x2="15.42"
+  y2="17.49"
+></line>
+
+<line
+  x1="15.41"
+  y1="6.51"
+  x2="8.59"
+  y2="10.49"
+></line>
+
+</svg>
+
+شارك الموقع لتعم الفائدة
+
+</button>
+
+</div>
+
+</div>
+
+
+</aside>
+
+</div>
+
+</main>
+
+
+<script>
+
+/* =====================================================
+   GLOBAL PLAYER STATE
+   ===================================================== */
+
+let hlsInstance = null;
+
+let bufferTimer = null;
+
+let healthTimer = null;
+
+let retryTimer = null;
+
+let retryCount = 0;
+
+let playerGeneration = 0;
+
+let currentStreamUrl = "";
+
+let currentChannelId = null;
+
+let currentChannelName = "";
+
+let currentVideo = null;
+
+let isRecovering = false;
+
+
+/* =====================================================
+   LOGIN
+   ===================================================== */
+
+const CORRECT_CODE = "1212";
+
+let isLoggedIn = true;
+
+
+/* =====================================================
+   CHANNELS
+   ===================================================== */
+
+const CHANNELS = {
+
+  server1: [
+
+    {
+      id: 1,
+      name: "Bein Sport 1",
+      url: "https://yac.rhomyrhomyy.workers.dev/stream/1424",
+      color: "sky",
+      logoUrl: "https://e.top4top.io/p_3613wsbdl0.jpg"
+    },
+
+    {
+      id: 2,
+      name: "Bein Sport 2",
+      url: "https://yac.rhomyrhomyy.workers.dev/stream/1425",
+      color: "sky",
+      logoUrl: "https://e.top4top.io/p_3613wsbdl0.jpg"
+    },
+
+    {
+      id: 3,
+      name: "Bein Sport 3",
+      url: "https://yac.rhomyrhomyy.workers.dev/stream/1426",
+      color: "sky",
+      logoUrl: "https://e.top4top.io/p_3613wsbdl0.jpg"
+    },
+
+    {
+      id: 4,
+      name: "Bein Sport 4",
+      url: "https://yac.rhomyrhomyy.workers.dev/stream/1427",
+      color: "sky",
+      logoUrl: "https://e.top4top.io/p_3613wsbdl0.jpg"
+    },
+
+    {
+      id: 5,
+      name: "Bein Sport 5",
+      url: "https://yac.rhomyrhomyy.workers.dev/stream/1428",
+      color: "sky",
+      logoUrl: "https://e.top4top.io/p_3613wsbdl0.jpg"
+    },
+
+    {
+      id: 6,
+      name: "العراقية الرياضية",
+      url: "https://imn-live.esite-lab.com/hls/iraqia-sports-1.m3u8",
+      color: "sky",
+      logoUrl: "https://e.top4top.io/p_3613wsbdl0.jpg"
+    }
+
+  ]
+
+};
+
+
+let activeServer = "server1";
+
+
+/* =====================================================
+   CREATE CHANNEL CARD
+   ===================================================== */
+
+function createChannelCard(channel) {
+
+  const fallbackSvg = `
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-6 h-6 text-sky-300"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <rect
+        x="2"
+        y="7"
+        width="20"
+        height="15"
+        rx="2"
+      ></rect>
+
+      <polyline
+        points="17 2 12 7 7 2"
+      ></polyline>
+    </svg>
+  `;
+
+
+  let logoContent = fallbackSvg;
+
+
+  if (
+    channel.logoUrl &&
+    channel.logoUrl.trim() !== ""
+  ) {
+
+    logoContent = `
+      <img
+        src="${channel.logoUrl}"
+        alt=""
+        class="channel-logo-image"
+        onerror="
+          this.onerror=null;
+          this.parentElement.innerHTML=this.parentElement.dataset.fallback;
+        "
+      >
+    `;
+  }
+
+
+  return `
+
+    <div
+      onclick="playChannel(
+        ${channel.id},
+        '${channel.url}',
+        '${channel.name.replace(/'/g, "\\'")}'
+      )"
+
+      class="
+        channel-card-clickable
+        glass
+        rounded-xl
+        p-3
+        border
+        border-slate-700/80
+        bg-slate-900/50
+      "
+
+      data-id="${channel.id}"
+    >
+
+      <div class="flex items-center gap-3">
+
+        <div
+          class="
+            channel-logo-container
+          "
+          data-fallback='${fallbackSvg}'
+        >
+          ${logoContent}
+        </div>
+
+        <div
+          class="
+            flex
+            flex-col
+            flex-1
+            min-w-0
+          "
+        >
+
+          <span
+            class="
+              font-semibold
+              text-base
+              text-slate-50
+              truncate
+            "
+          >
+            ${channel.name}
+          </span>
+
+          <span
+            class="
+              text-[10px]
+              text-slate-500
+            "
+          >
+            بث مباشر
+          </span>
+
+        </div>
 
       </div>
 
+    </div>
+
+  `;
+}
+
+
+/* =====================================================
+   SWITCH SERVER
+   ===================================================== */
+
+function switchServer(serverId) {
+
+  if (!CHANNELS[serverId]) return;
+
+  activeServer = serverId;
+
+
+  document
+    .querySelectorAll(".server-button")
+    .forEach(btn => {
+
+      btn.classList.remove(
+        "server-button-active"
+      );
+
+      if (
+        btn.dataset.serverId === serverId
+      ) {
+
+        btn.classList.add(
+          "server-button-active"
+        );
+      }
+
+    });
+
+
+  const container =
+    document.getElementById(
+      "channelList"
+    );
+
+
+  container.innerHTML = "";
+
+
+  CHANNELS[serverId].forEach(
+    channel => {
+
+      container.innerHTML +=
+        createChannelCard(channel);
+
+    }
+  );
+
+
+  destroyPlayer();
+
+  restorePlaceholder();
+
+}
+
+
+/* =====================================================
+   PLACEHOLDER
+   ===================================================== */
+
+function restorePlaceholder() {
+
+  const container =
+    document.getElementById(
+      "playerContainer"
+    );
+
+
+  container.innerHTML = `
+
+    <div
+      id="playerPlaceholder"
+      class="
+        flex
+        flex-col
+        items-center
+        gap-3
+        px-4
+        text-center
+      "
+    >
+
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-10 h-10 text-sky-300"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+      >
+
+        <circle
+          cx="12"
+          cy="12"
+          r="9"
+          stroke-width="1.4"
+        ></circle>
+
+        <path
+          d="M10 9.5v5l4-2.5-4-2.5z"
+          fill="currentColor"
+          stroke="none"
+        ></path>
+
+      </svg>
+
+      <div class="space-y-1">
+
+        <p
+          class="
+            font-semibold
+            text-slate-100
+          "
+        >
+          اضغط على اسم القناة لبدء المشاهدة.
+        </p>
+
+        <p
+          class="
+            text-sm
+            text-slate-400
+          "
+        >
+          القناة الحالية:
+
+          <span
+            id="currentChannelLabel"
+            class="
+              font-semibold
+              text-sky-300
+            "
+          >
+            لم يتم الاختيار
+          </span>
+
+        </p>
+
+      </div>
+
+    </div>
+  `;
+
+
+  const label =
+    document.getElementById(
+      "currentChannelLabel"
+    );
+
+  if (label) {
+
+    label.textContent =
+      "لم يتم الاختيار";
+  }
+}
+
+
+/* =====================================================
+   DESTROY PLAYER
+   ===================================================== */
+
+function destroyPlayer() {
+
+  playerGeneration++;
+
+  isRecovering = false;
+
+
+  if (bufferTimer) {
+
+    clearInterval(bufferTimer);
+
+    bufferTimer = null;
+  }
+
+
+  if (healthTimer) {
+
+    clearInterval(healthTimer);
+
+    healthTimer = null;
+  }
+
+
+  if (retryTimer) {
+
+    clearTimeout(retryTimer);
+
+    retryTimer = null;
+  }
+
+
+  if (hlsInstance) {
+
+    try {
+      hlsInstance.stopLoad();
+    } catch (e) {}
+
+    try {
+      hlsInstance.detachMedia();
+    } catch (e) {}
+
+    try {
+      hlsInstance.destroy();
+    } catch (e) {}
+
+    hlsInstance = null;
+  }
+
+
+  currentVideo = null;
+
+  currentStreamUrl = "";
+
+  retryCount = 0;
+}
+
+
+/* =====================================================
+   PLAYER UI
+   ===================================================== */
+
+function createPlayerUI() {
+
+  const container =
+    document.getElementById(
+      "playerContainer"
+    );
+
+
+  container.innerHTML = `
+
+    <video
+      id="videoPlayer"
+      playsinline
+      webkit-playsinline
+      preload="auto"
+      x-webkit-airplay="allow"
+      disablepictureinpicture
+    ></video>
+
+
+    <div
+      class="player-overlay"
+    >
+
+
+      <!-- TOP -->
+
       <div
-        id="playerContainer"
-        class="relative w-full aspect-video rounded-xl bg-black border border-slate-800 shadow-inner flex items-center justify-center text-slate-400"
+        class="player-top-status"
       >
 
         <div
-          id="playerPlaceholder"
-          class="flex flex-col items-center gap-3 px-4 text-center"
+          class="live-badge"
         >
 
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-8 h-8 text-sky-300"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <circle
-              cx="12"
-              cy="12"
-              r="9"
-              stroke-width="1.4"
-            ></circle>
+          <span
+            class="live-dot"
+          ></span>
 
-            <path
-              d="M10 9.5v5l4-2.5-4-2.5z"
-              fill="currentColor"
-              stroke-width="0.6"
-              stroke="none"
-            ></path>
-          </svg>
+          <span>
+            LIVE
+          </span>
 
-          <div class="space-y-1">
-
-            <p class="font-semibold text-slate-100">
-              اضغط على اسم القناة لبدء المشاهدة.
-            </p>
-
-            <p class="text-sm text-slate-400">
-              القناة الحالية:
-              <span
-                id="currentChannelLabel"
-                class="font-semibold text-sky-300"
-              >
-                لم يتم الاختيار
-              </span>
-            </p>
-
-          </div>
         </div>
-      </div>
 
-      <div class="mt-4 border-t border-slate-800 pt-4">
 
         <div
-          class="flex flex-wrap gap-1 justify-center"
-          id="allServersContainer"
+          id="stabilityStatus"
+          class="stability-status"
+        >
+          جاري الاتصال...
+        </div>
+
+      </div>
+
+
+      <!-- LOADING -->
+
+      <div
+        id="playerLoading"
+        class="player-loading"
+      >
+
+        <div
+          class="loading-spinner"
+        ></div>
+
+        <div
+          id="loadingText"
+          class="loading-text"
+        >
+          جاري تحميل البث...
+        </div>
+
+      </div>
+
+
+      <!-- BOTTOM -->
+
+      <div
+        class="player-bottom"
+      >
+
+        <div
+          class="progress-info"
         >
 
-          <button
-            onclick="switchServer('server1')"
-            id="btn-server1"
-            class="py-0.5 px-2 text-xs font-bold rounded-lg border border-slate-700 transition hover:bg-slate-700/50 server-button server-button-active"
-            data-server-id="server1"
+          <span
+            id="bufferText"
           >
-            قنوات رياضية بواسطة Rahomi
-          </button>
+            Buffer: 0s
+          </span>
+
+          <span
+            id="connectionText"
+          >
+            اتصال مستقر
+          </span>
+
+        </div>
+
+
+        <!--
+          هذا هو شريط التقدم الوحيد
+        -->
+
+        <div
+          class="progress-track"
+        >
+
+          <div
+            id="bufferProgress"
+          ></div>
+
+        </div>
+
+
+        <div
+          class="player-buttons"
+        >
+
+          <div
+            class="player-buttons-right"
+          >
+
+            <button
+              class="player-btn"
+              onclick="togglePlay()"
+              id="playButton"
+              title="تشغيل / إيقاف"
+            >
+              ▶
+            </button>
+
+            <button
+              class="player-btn"
+              onclick="mutePlayer()"
+              id="muteButton"
+              title="الصوت"
+            >
+              🔊
+            </button>
+
+          </div>
+
+
+          <div
+            class="player-buttons-left"
+          >
+
+            <button
+              class="player-btn"
+              onclick="goLive()"
+              title="العودة للبث المباشر"
+            >
+              LIVE
+            </button>
+
+            <button
+              class="player-btn"
+              onclick="toggleFullscreen()"
+              title="ملء الشاشة"
+            >
+              ⛶
+            </button>
+
+          </div>
 
         </div>
 
       </div>
-    </div>
-  </section>
-
-  <aside class="space-y-6 xl:col-span-1 order-2 xl:order-none">
-
-    <div class="glass rounded-2xl p-4 md:p-5 shadow-xl">
-
-      <h2 class="title-font text-xl font-bold text-sky-200 mb-4">
-        القنوات
-      </h2>
-
-      <div
-        class="flex flex-col gap-3"
-        id="channelList"
-      ></div>
 
     </div>
 
-    <div class="glass rounded-2xl p-4 md:p-5 shadow-xl border-sky-400/50">
+  `;
 
-      <div class="flex flex-col items-center justify-center gap-3">
 
-        <a
-          href="https://t.me/GOTV_RI"
-          target="_blank"
-          class="w-full"
-        >
+  currentVideo =
+    document.getElementById(
+      "videoPlayer"
+    );
 
-          <button
-            class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/50"
-          >
 
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M9.197 16.59L9 20.25c.36 0 .518-.155.706-.341l1.692-1.647 3.507 2.565c.643.354 1.097.168 1.266-.596l2.295-10.785c.234-.944-.34-1.314-.964-1.085L3.77 11.01c-.93.36-.916.879-.158 1.113l3.94 1.227 9.146-5.77c.43-.262.825-.117.501.144"></path>
-            </svg>
+  attachVideoEvents(
+    currentVideo
+  );
+}
 
-            حمل تطبيقنا على أجهزة الأندرويد
 
-          </button>
+/* =====================================================
+   LOADING
+   ===================================================== */
 
-        </a>
+function setLoading(
+  status,
+  text = "جاري تحميل البث..."
+) {
 
-        <button
-          onclick="shareSite()"
-          class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-semibold bg-sky-600/30 hover:bg-sky-600/50 transition"
-        >
+  const loading =
+    document.getElementById(
+      "playerLoading"
+    );
 
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-4 h-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="18" cy="5" r="3"></circle>
-            <circle cx="6" cy="12" r="3"></circle>
-            <circle cx="18" cy="19" r="3"></circle>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-          </svg>
 
-          شارك الموقع لتعم الفائدة
+  const loadingText =
+    document.getElementById(
+      "loadingText"
+    );
 
-        </button>
 
-      </div>
-    </div>
+  if (!loading) return;
 
-  </aside>
-</div>
 
-  </main>  <script>
+  if (loadingText) {
 
-    let hlsInstance = null;
+    loadingText.textContent =
+      text;
+  }
 
-    let bufferTimer = null;
 
-    const CORRECT_CODE = "1212";
+  if (status) {
 
-    let isLoggedIn = true;
+    loading.classList.add(
+      "visible"
+    );
+
+  } else {
+
+    loading.classList.remove(
+      "visible"
+    );
+  }
+}
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+function setConnectionStatus(
+  text,
+  good = true
+) {
+
+  const el =
+    document.getElementById(
+      "connectionText"
+    );
+
+
+  if (!el) return;
+
+
+  el.textContent = text;
+
+
+  if (good) {
+
+    el.style.color =
+      "#86efac";
+
+  } else {
+
+    el.style.color =
+      "#fbbf24";
+  }
+}
+
+
+function setStabilityStatus(
+  text
+) {
+
+  const el =
+    document.getElementById(
+      "stabilityStatus"
+    );
+
+
+  if (el) {
+
+    el.textContent = text;
+  }
+}
+
+
+/* =====================================================
+   BUFFER MONITOR
+   ===================================================== */
+
+function startBufferMonitor(
+  video,
+  generation
+) {
+
+  if (bufferTimer) {
+
+    clearInterval(
+      bufferTimer
+    );
+  }
+
+
+  bufferTimer =
+    setInterval(
+      function() {
+
+        if (
+          generation !== playerGeneration
+        ) {
+
+          clearInterval(
+            bufferTimer
+          );
+
+          return;
+        }
+
+
+        if (
+          !video ||
+          video.readyState < 2
+        ) {
+
+          return;
+        }
+
+
+        let bufferedSeconds = 0;
+
+
+        try {
+
+          const currentTime =
+            video.currentTime;
+
+          const ranges =
+            video.buffered;
+
+
+          for (
+            let i = 0;
+            i < ranges.length;
+            i++
+          ) {
+
+            const start =
+              ranges.start(i);
+
+            const end =
+              ranges.end(i);
+
+
+            if (
+              currentTime >= start &&
+              currentTime <= end
+            ) {
+
+              bufferedSeconds =
+                Math.max(
+                  0,
+                  end - currentTime
+                );
+
+              break;
+            }
+          }
+
+        } catch (e) {}
+
+
+        const seconds =
+          Math.round(
+            bufferedSeconds
+          );
+
+
+        const text =
+          document.getElementById(
+            "bufferText"
+          );
+
+
+        const progress =
+          document.getElementById(
+            "bufferProgress"
+          );
+
+
+        if (text) {
+
+          text.textContent =
+            `Buffer: ${seconds}s`;
+        }
+
+
+        if (progress) {
+
+          /*
+             الحد البصري 30 ثانية.
+          */
+
+          const percent =
+            Math.min(
+              100,
+              (bufferedSeconds / 30) * 100
+            );
+
+
+          progress.style.width =
+            percent + "%";
+
+
+          if (
+            bufferedSeconds < 2
+          ) {
+
+            progress.style.background =
+              "#ef4444";
+
+            setConnectionStatus(
+              "Buffer منخفض",
+              false
+            );
+
+          }
+
+          else if (
+            bufferedSeconds < 5
+          ) {
+
+            progress.style.background =
+              "#f59e0b";
+
+            setConnectionStatus(
+              "يتم تثبيت البث",
+              false
+            );
+
+          }
+
+          else {
+
+            progress.style.background =
+              "#38bdf8";
+
+            setConnectionStatus(
+              "اتصال مستقر",
+              true
+            );
+          }
+        }
+
+
+        /*
+           مراقبة التأخير عن البث المباشر
+        */
+
+        if (
+          hlsInstance &&
+          hlsInstance.liveSyncPosition
+        ) {
+
+          const livePosition =
+            hlsInstance.liveSyncPosition;
+
+          const latency =
+            livePosition -
+            video.currentTime;
+
+
+          if (
+            latency > 20
+          ) {
+
+            setStabilityStatus(
+              "مزامنة البث..."
+            );
+
+          }
+
+          else if (
+            latency > 10
+          ) {
+
+            setStabilityStatus(
+              "تثبيت الاتصال"
+            );
+
+          }
+
+          else {
+
+            setStabilityStatus(
+              "البث مستقر"
+            );
+          }
+
+        }
+
+      },
+      500
+    );
+}
+
+
+/* =====================================================
+   VIDEO EVENTS
+   ===================================================== */
+
+function attachVideoEvents(
+  video
+) {
+
+  if (!video) return;
+
+
+  video.addEventListener(
+    "playing",
+    function() {
+
+      setLoading(false);
+
+      setConnectionStatus(
+        "اتصال مستقر",
+        true
+      );
+
+      setStabilityStatus(
+        "البث مستقر"
+      );
+
+
+      const button =
+        document.getElementById(
+          "playButton"
+        );
+
+      if (button) {
+
+        button.textContent =
+          "Ⅱ";
+      }
+
+    }
+  );
+
+
+  video.addEventListener(
+    "pause",
+    function() {
+
+      const button =
+        document.getElementById(
+          "playButton"
+        );
+
+      if (button) {
+
+        button.textContent =
+          "▶";
+      }
+    }
+  );
+
+
+  video.addEventListener(
+    "waiting",
+    function() {
+
+      setLoading(
+        true,
+        "تثبيت البث..."
+      );
+
+      setConnectionStatus(
+        "جاري تثبيت الاتصال",
+        false
+      );
+
+      silentRecovery(
+        "waiting"
+      );
+
+    }
+  );
+
+
+  video.addEventListener(
+    "stalled",
+    function() {
+
+      setLoading(
+        true,
+        "إعادة تثبيت البث..."
+      );
+
+      setConnectionStatus(
+        "إعادة تثبيت الاتصال",
+        false
+      );
+
+      silentRecovery(
+        "stalled"
+      );
+
+    }
+  );
+
+
+  video.addEventListener(
+    "error",
+    function() {
+
+      silentRecovery(
+        "video-error"
+      );
+
+    }
+  );
+
+
+  video.addEventListener(
+    "canplay",
+    function() {
+
+      if (
+        video.paused === false
+      ) {
+
+        setLoading(false);
+      }
+
+    }
+  );
+
+
+  video.addEventListener(
+    "timeupdate",
+    function() {
+
+      /*
+         إذا عاد البث للعمل
+         نلغي حالة الاستعادة.
+      */
+
+      if (
+        !video.paused &&
+        video.readyState >= 3
+      ) {
+
+        isRecovering = false;
+      }
+
+    }
+  );
+}
+
+
+/* =====================================================
+   HLS CONFIG
+   ===================================================== */
+
+function createHls() {
+
+  return new Hls({
+
+    debug: false,
+
+    enableWorker: true,
+
+    lowLatencyMode: false,
+
+    capLevelToPlayerSize: true,
+
+    startLevel: -1,
 
 
     /*
-     * ==================================================
-     * القنوات
-     * ==================================================
-     *
-     * تم تصحيح روابط القنوات المطلوبة.
-     */
+       Buffer
+    */
 
-    const CHANNELS = {
+    maxBufferLength: 30,
 
-      'server1': [
+    maxMaxBufferLength: 60,
 
-        {
-          id: 1,
-          name: 'Bein Sport 1',
-          url: 'https://yac.rhomyrhomyy.workers.dev/stream/1424',
-          color: 'sky',
-          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
-        },
-
-        {
-          id: 2,
-          name: 'Bein Sport 2',
-          url: 'https://yac.rhomyrhomyy.workers.dev/stream/1425',
-          color: 'sky',
-          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
-        },
-
-        {
-          id: 3,
-          name: 'Bein Sport 3',
-          url: 'https://yac.rhomyrhomyy.workers.dev/stream/1426',
-          color: 'sky',
-          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
-        },
-
-        {
-          id: 4,
-          name: 'Bein Sport 4',
-          url: 'https://yac.rhomyrhomyy.workers.dev/stream/1427',
-          color: 'sky',
-          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
-        },
-
-        {
-          id: 5,
-          name: 'Bein Sport 5',
-          url: 'https://yac.rhomyrhomyy.workers.dev/stream/1428',
-          color: 'sky',
-          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
-        },
-
-        {
-          id: 6,
-          name: 'العراقية الرياضية',
-          url: 'https://imn-live.esite-lab.com/hls/iraqia-sports-1.m3u8',
-          color: 'sky',
-          logoUrl: 'https://e.top4top.io/p_3613wsbdl0.jpg'
-        }
-
-      ]
-
-    };
+    backBufferLength: 30,
 
 
-    let activeServer = 'server1';
+    /*
+       Live
+    */
+
+    liveSyncDurationCount: 4,
+
+    liveMaxLatencyDurationCount: 12,
+
+    maxLiveSyncPlaybackRate: 1.05,
 
 
-    // ==================================================
-    // CREATE CHANNEL CARD
-    // ==================================================
+    /*
+       ABR
+    */
 
-    function createChannelCard(channel) {
+    abrEwmaFastLive: 3,
 
-      const fallbackSvg = `
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-6 h-6 text-${channel.color}-300"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <rect
-            x="2"
-            y="7"
-            width="20"
-            height="15"
-            rx="2"
-            ry="2"
-          ></rect>
+    abrEwmaSlowLive: 9,
 
-          <polyline points="17 2 12 7 7 2"></polyline>
-        </svg>
-      `;
+    abrBandWidthFactor: 0.75,
+
+    abrBandWidthUpFactor: 0.70,
 
 
-      let logoContent;
+    /*
+       Manifest retry
+    */
+
+    manifestLoadingMaxRetry: 8,
+
+    manifestLoadingRetryDelay: 1000,
+
+    manifestLoadingMaxRetryTimeout: 10000,
 
 
-      if (
-        channel.logoUrl &&
-        channel.logoUrl.trim() !== ''
-      ) {
+    /*
+       Level retry
+    */
 
-        logoContent = `
-          <img
-            src="${channel.logoUrl}"
-            alt="${channel.name} logo"
-            class="channel-logo-image"
-            onerror="this.onerror=null; this.parentElement.innerHTML=this.parentElement.dataset.fallback;"
-          >
-        `;
+    levelLoadingMaxRetry: 8,
 
-      } else {
+    levelLoadingRetryDelay: 1000,
 
-        logoContent = fallbackSvg;
-
-      }
+    levelLoadingMaxRetryTimeout: 10000,
 
 
-      return `
-        <div
-          onclick="playChannel(${channel.id}, '${channel.url}', '${channel.name}')"
-          class="channel-card-clickable glass rounded-xl p-3 border border-slate-700/80 bg-slate-900/50"
-          data-id="${channel.id}"
-        >
+    /*
+       Fragment retry
+    */
 
-          <div class="flex items-center gap-3">
+    fragLoadingMaxRetry: 10,
 
-            <div
-              class="channel-logo-container bg-sky-500/20 flex items-center justify-center border border-sky-400/50"
-              data-fallback='${fallbackSvg}'
-            >
-              ${logoContent}
-            </div>
+    fragLoadingRetryDelay: 1000,
 
-            <div class="flex flex-col flex-1 min-w-0">
-
-              <span class="font-semibold text-base text-slate-50 truncate">
-                ${channel.name}
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
-      `;
-    }
+    fragLoadingMaxRetryTimeout: 10000,
 
 
-    // ==================================================
-    // SWITCH SERVER
-    // ==================================================
+    /*
+       Network
+    */
 
-    function switchServer(serverId) {
+    maxFragLookUpTolerance: 0.25,
 
-      if (!CHANNELS[serverId]) return;
+    maxLoadingDelay: 4
 
-      activeServer = serverId;
-
-
-      const channelListContainer =
-        document.getElementById('channelList');
+  });
+}
 
 
-      const serverButtons =
-        document.querySelectorAll('.server-button');
+/* =====================================================
+   PLAY CHANNEL
+   ===================================================== */
+
+function playChannel(
+  id,
+  url,
+  name
+) {
+
+  if (
+    !url ||
+    url.trim() === ""
+  ) {
+
+    return;
+  }
 
 
-      serverButtons.forEach(btn => {
+  /*
+     كل قناة جديدة تلغي
+     كل عمليات القناة القديمة.
+  */
 
-        btn.classList.remove(
-          'server-button-active'
-        );
+  destroyPlayer();
+
+
+  currentStreamUrl =
+    url;
+
+  currentChannelId =
+    id;
+
+  currentChannelName =
+    name;
+
+  retryCount = 0;
+
+  isRecovering = false;
+
+
+  const label =
+    document.getElementById(
+      "currentChannelLabel"
+    );
+
+
+  if (label) {
+
+    label.textContent =
+      name;
+  }
+
+
+  /*
+     Active card
+  */
+
+  document
+    .querySelectorAll(
+      ".channel-card-clickable"
+    )
+    .forEach(card => {
+
+      card.classList.remove(
+        "channel-card-active"
+      );
+
+    });
+
+
+  const card =
+    Array.from(
+      document.querySelectorAll(
+        ".channel-card-clickable"
+      )
+    ).find(
+      el =>
+        el.dataset.id == id
+    );
+
+
+  if (card) {
+
+    card.classList.add(
+      "channel-card-active"
+    );
+  }
+
+
+  /*
+     إنشاء اللاعب
+  */
+
+  createPlayerUI();
+
+
+  const video =
+    document.getElementById(
+      "videoPlayer"
+    );
+
+
+  if (!video) return;
+
+
+  const generation =
+    playerGeneration;
+
+
+  setLoading(
+    true,
+    "جاري الاتصال بالبث..."
+  );
+
+
+  setStabilityStatus(
+    "جاري الاتصال..."
+  );
+
+
+  /*
+     HLS.JS
+  */
+
+  if (
+    Hls.isSupported()
+  ) {
+
+    hlsInstance =
+      createHls();
+
+
+    hlsInstance.attachMedia(
+      video
+    );
+
+
+    hlsInstance.on(
+      Hls.Events.MEDIA_ATTACHED,
+      function() {
 
         if (
-          btn.dataset.serverId === serverId
+          generation !==
+          playerGeneration
+        ) return;
+
+
+        hlsInstance.loadSource(
+          currentStreamUrl
+        );
+
+      }
+    );
+
+
+    hlsInstance.on(
+      Hls.Events.MANIFEST_PARSED,
+      function() {
+
+        if (
+          generation !==
+          playerGeneration
+        ) return;
+
+
+        retryCount = 0;
+
+        setLoading(
+          false
+        );
+
+
+        startBufferMonitor(
+          video,
+          generation
+        );
+
+
+        /*
+           التشغيل بعد ضغطة المستخدم
+           يسمح بمحاولة fullscreen.
+        */
+
+        video
+          .play()
+          .then(
+            function() {
+
+              setLoading(false);
+
+              setConnectionStatus(
+                "اتصال مستقر",
+                true
+              );
+
+              setStabilityStatus(
+                "البث مستقر"
+              );
+
+              requestFullscreenAndLandscape();
+
+            }
+          )
+          .catch(
+            function() {
+
+              setLoading(
+                false
+              );
+
+            }
+          );
+
+      }
+    );
+
+
+    hlsInstance.on(
+      Hls.Events.FRAG_LOADED,
+      function() {
+
+        if (
+          video.readyState >= 3
         ) {
 
-          btn.classList.add(
-            'server-button-active'
+          setLoading(false);
+
+          isRecovering = false;
+        }
+
+      }
+    );
+
+
+    hlsInstance.on(
+      Hls.Events.BUFFER_APPENDED,
+      function() {
+
+        if (
+          video.readyState >= 3 &&
+          !video.paused
+        ) {
+
+          setLoading(false);
+        }
+
+      }
+    );
+
+
+    hlsInstance.on(
+      Hls.Events.ERROR,
+      function(
+        event,
+        data
+      ) {
+
+        if (
+          generation !==
+          playerGeneration
+        ) return;
+
+
+        /*
+           Network
+        */
+
+        if (
+          data.fatal &&
+          data.type ===
+          Hls.ErrorTypes.NETWORK_ERROR
+        ) {
+
+          silentHlsRecovery(
+            "network"
+          );
+
+          return;
+        }
+
+
+        /*
+           Media
+        */
+
+        if (
+          data.fatal &&
+          data.type ===
+          Hls.ErrorTypes.MEDIA_ERROR
+        ) {
+
+          silentMediaRecovery();
+
+          return;
+        }
+
+
+        /*
+           Fatal unknown
+        */
+
+        if (
+          data.fatal
+        ) {
+
+          silentFullRecovery();
+
+        }
+
+      }
+    );
+
+  }
+
+
+  /*
+     Native HLS
+     Safari / iOS
+  */
+
+  else if (
+    video.canPlayType(
+      "application/vnd.apple.mpegurl"
+    )
+  ) {
+
+    video.src =
+      currentStreamUrl;
+
+
+    video.addEventListener(
+      "loadedmetadata",
+      function() {
+
+        if (
+          generation !==
+          playerGeneration
+        ) return;
+
+
+        setLoading(false);
+
+
+        startBufferMonitor(
+          video,
+          generation
+        );
+
+
+        video
+          .play()
+          .then(
+            function() {
+
+              requestFullscreenAndLandscape();
+
+            }
+          )
+          .catch(
+            function() {}
+          );
+
+      }
+    );
+
+  }
+
+  else {
+
+    setLoading(
+      false
+    );
+
+    return;
+  }
+
+
+  /*
+     مراقبة الصحة
+  */
+
+  startHealthMonitor(
+    video,
+    generation
+  );
+
+}
+
+
+/* =====================================================
+   SILENT HLS RECOVERY
+   ===================================================== */
+
+function silentHlsRecovery(
+  reason
+) {
+
+  if (
+    isRecovering
+  ) return;
+
+
+  isRecovering = true;
+
+
+  setLoading(
+    true,
+    "تثبيت البث..."
+  );
+
+
+  setConnectionStatus(
+    "جاري إعادة الاتصال",
+    false
+  );
+
+
+  setStabilityStatus(
+    "إعادة الاتصال..."
+  );
+
+
+  if (
+    hlsInstance
+  ) {
+
+    try {
+
+      hlsInstance.startLoad();
+
+      hlsInstance.recoverMediaError();
+
+    } catch (e) {}
+
+  }
+
+
+  setTimeout(
+    function() {
+
+      isRecovering = false;
+
+    },
+    2500
+  );
+
+}
+
+
+/* =====================================================
+   MEDIA RECOVERY
+   ===================================================== */
+
+function silentMediaRecovery() {
+
+  if (
+    isRecovering
+  ) return;
+
+
+  isRecovering = true;
+
+
+  setLoading(
+    true,
+    "إصلاح البث..."
+  );
+
+
+  setConnectionStatus(
+    "إصلاح الاتصال",
+    false
+  );
+
+
+  if (
+    hlsInstance
+  ) {
+
+    try {
+
+      hlsInstance.recoverMediaError();
+
+    } catch (e) {
+
+      silentFullRecovery();
+
+      return;
+    }
+
+  }
+
+
+  setTimeout(
+    function() {
+
+      isRecovering = false;
+
+    },
+    3000
+  );
+
+}
+
+
+/* =====================================================
+   FULL RECOVERY
+   ===================================================== */
+
+function silentFullRecovery() {
+
+  if (
+    retryTimer
+  ) return;
+
+
+  const generation =
+    playerGeneration;
+
+
+  retryCount++;
+
+
+  /*
+     Backoff ذكي
+  */
+
+  const delay =
+    Math.min(
+      15000,
+      1000 *
+      Math.pow(
+        1.5,
+        Math.min(
+          retryCount - 1,
+          6
+        )
+      )
+    );
+
+
+  setLoading(
+    true,
+    "إعادة الاتصال بالبث..."
+  );
+
+
+  setConnectionStatus(
+    "إعادة الاتصال",
+    false
+  );
+
+
+  setStabilityStatus(
+    "استعادة البث..."
+  );
+
+
+  retryTimer =
+    setTimeout(
+      function() {
+
+        retryTimer = null;
+
+
+        if (
+          generation !==
+          playerGeneration
+        ) return;
+
+
+        /*
+           إعادة بناء HLS فقط
+           بعد فشل الاستعادة.
+        */
+
+        const oldVideo =
+          currentVideo;
+
+
+        if (
+          oldVideo
+        ) {
+
+          try {
+            oldVideo.pause();
+          } catch (e) {}
+
+        }
+
+
+        if (
+          hlsInstance
+        ) {
+
+          try {
+            hlsInstance.destroy();
+
+          } catch (e) {}
+
+          hlsInstance = null;
+
+        }
+
+
+        /*
+           إنشاء HLS جديد
+        */
+
+        if (
+          Hls.isSupported() &&
+          currentStreamUrl
+        ) {
+
+          const video =
+            document.getElementById(
+              "videoPlayer"
+            );
+
+
+          if (!video) return;
+
+
+          hlsInstance =
+            createHls();
+
+
+          hlsInstance.attachMedia(
+            video
+          );
+
+
+          hlsInstance.on(
+            Hls.Events.MEDIA_ATTACHED,
+            function() {
+
+              hlsInstance.loadSource(
+                currentStreamUrl
+              );
+
+            }
+          );
+
+
+          hlsInstance.on(
+            Hls.Events.MANIFEST_PARSED,
+            function() {
+
+              retryCount = 0;
+
+              setLoading(
+                false
+              );
+
+
+              try {
+
+                video.play();
+
+              } catch (e) {}
+
+
+              isRecovering = false;
+
+            }
+          );
+
+
+          hlsInstance.on(
+            Hls.Events.ERROR,
+            function(
+              event,
+              data
+            ) {
+
+              if (
+                data.fatal
+              ) {
+
+                isRecovering = false;
+
+                silentFullRecovery();
+
+              }
+
+            }
           );
 
         }
 
-      });
+      },
+      delay
+    );
+
+}
 
 
-      channelListContainer.innerHTML = '';
+/* =====================================================
+   WAITING / STALLED RECOVERY
+   ===================================================== */
+
+function silentRecovery(
+  reason
+) {
+
+  if (
+    isRecovering
+  ) return;
 
 
-      CHANNELS[serverId].forEach(channel => {
-
-        channelListContainer.innerHTML +=
-          createChannelCard(channel);
-
-      });
+  isRecovering = true;
 
 
-      destroyPlayer();
+  /*
+     لا نعيد إنشاء المشغل مباشرة.
+     نعطي HLS فرصة أولاً.
+  */
+
+  if (
+    hlsInstance
+  ) {
+
+    try {
+
+      hlsInstance.startLoad();
+
+    } catch (e) {}
+
+  }
 
 
-      const playerContainer =
-        document.getElementById(
-          "playerContainer"
-        );
+  /*
+     إذا استمر التوقف
+     نعمل استعادة كاملة.
+  */
+
+  setTimeout(
+    function() {
+
+      if (
+        !currentVideo
+      ) return;
 
 
-      playerContainer.innerHTML = `
-        <div
-          id="playerPlaceholder"
-          class="flex flex-col items-center gap-3 px-4 text-center"
-        >
+      if (
+        currentVideo.readyState < 3
+      ) {
 
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-8 h-8 text-sky-300"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
+        isRecovering = false;
 
-            <circle
-              cx="12"
-              cy="12"
-              r="9"
-              stroke-width="1.4"
-            ></circle>
+        silentFullRecovery();
 
-            <path
-              d="M10 9.5v5l4-2.5-4-2.5z"
-              fill="currentColor"
-              stroke-width="0.6"
-              stroke="none"
-            ></path>
+      }
+      else {
 
-          </svg>
+        isRecovering = false;
 
-          <div class="space-y-1">
-
-            <p class="font-semibold text-slate-100">
-              اضغط على اسم القناة لبدء المشاهدة.
-            </p>
-
-            <p class="text-sm text-slate-400">
-              القناة الحالية:
-              <span
-                id="currentChannelLabel"
-                class="font-semibold text-sky-300"
-              >
-                لم يتم الاختيار
-              </span>
-            </p>
-
-          </div>
-
-        </div>
-      `;
-
-
-      document.getElementById(
-        "currentChannelLabel"
-      ).textContent =
-        'لم يتم الاختيار';
-
-
-      document
-        .querySelectorAll(
-          '.channel-card-clickable'
-        )
-        .forEach(card =>
-          card.classList.remove(
-            'channel-card-active'
-          )
-        );
-    }
-
-
-    // ==================================================
-    // DESTROY PLAYER
-    // ==================================================
-
-    function destroyPlayer() {
-
-      if (bufferTimer) {
-
-        clearInterval(
-          bufferTimer
-        );
-
-        bufferTimer = null;
+        setLoading(false);
 
       }
 
+    },
+    3500
+  );
 
-      if (hlsInstance) {
-
-        try {
-
-          hlsInstance.stopLoad();
-
-        } catch (e) {}
-
-        hlsInstance.destroy();
-
-        hlsInstance = null;
-
-      }
-
-    }
+}
 
 
-    // ==================================================
-    // PAGES
-    // ==================================================
+/* =====================================================
+   HEALTH MONITOR
+   ===================================================== */
 
-    function togglePages(status) {
+function startHealthMonitor(
+  video,
+  generation
+) {
 
-      const loginPage =
-        document.getElementById(
-          "loginPage"
-        );
+  if (
+    healthTimer
+  ) {
 
-      const channelsContent =
-        document.getElementById(
-          "channelsContent"
-        );
-
-
-      if (status) {
-
-        loginPage.classList.add(
-          "hidden"
-        );
-
-        channelsContent.classList.remove(
-          "hidden"
-        );
-
-        document.body.style.justifyContent =
-          'flex-start';
-
-      } else {
-
-        loginPage.classList.remove(
-          "hidden"
-        );
-
-        channelsContent.classList.add(
-          "hidden"
-        );
-
-        document.body.style.justifyContent =
-          'center';
-
-      }
-
-    }
+    clearInterval(
+      healthTimer
+    );
+  }
 
 
-    // ==================================================
-    // WINDOW LOAD
-    // ==================================================
+  let lastTime =
+    -1;
 
-    window.onload = function() {
+  let stuckCounter =
+    0;
 
-      togglePages(true);
 
-      switchServer(
-        activeServer
+  healthTimer =
+    setInterval(
+      function() {
+
+        if (
+          generation !==
+          playerGeneration
+        ) {
+
+          clearInterval(
+            healthTimer
+          );
+
+          return;
+        }
+
+
+        if (
+          !video
+        ) return;
+
+
+        /*
+           إذا كان الفيديو متوقفاً
+           لا نتدخل بسرعة.
+        */
+
+        if (
+          video.paused
+        ) {
+
+          stuckCounter = 0;
+
+          return;
+        }
+
+
+        const currentTime =
+          video.currentTime;
+
+
+        if (
+          currentTime ===
+          lastTime
+        ) {
+
+          stuckCounter++;
+
+        }
+        else {
+
+          stuckCounter = 0;
+
+        }
+
+
+        lastTime =
+          currentTime;
+
+
+        /*
+           توقف أكثر من 5 ثوان
+        */
+
+        if (
+          stuckCounter >= 5
+        ) {
+
+          stuckCounter = 0;
+
+          silentRecovery(
+            "health"
+          );
+
+        }
+
+
+        /*
+           إذا كان HLS يحمل ولكن الفيديو
+           بعيد جداً عن live edge.
+        */
+
+        if (
+          hlsInstance &&
+          hlsInstance.liveSyncPosition
+        ) {
+
+          const live =
+            hlsInstance.liveSyncPosition;
+
+
+          const delay =
+            live -
+            video.currentTime;
+
+
+          if (
+            delay > 25
+          ) {
+
+            try {
+
+              video.currentTime =
+                live - 3;
+
+            } catch (e) {}
+
+          }
+
+        }
+
+      },
+      1000
+    );
+}
+
+
+/* =====================================================
+   PLAY / PAUSE
+   ===================================================== */
+
+function togglePlay() {
+
+  if (
+    !currentVideo
+  ) return;
+
+
+  if (
+    currentVideo.paused
+  ) {
+
+    currentVideo
+      .play()
+      .catch(
+        () => {}
       );
 
-    };
+  }
+
+  else {
+
+    currentVideo.pause();
+
+  }
+
+}
 
 
-    // ==================================================
-    // FULLSCREEN
-    // ==================================================
+/* =====================================================
+   MUTE
+   ===================================================== */
 
-    function requestFullscreen(element) {
+function mutePlayer() {
 
-      const container =
-        document.getElementById(
-          "playerContainer"
-        );
+  if (
+    !currentVideo
+  ) return;
 
+
+  currentVideo.muted =
+    !currentVideo.muted;
+
+
+  const btn =
+    document.getElementById(
+      "muteButton"
+    );
+
+
+  if (btn) {
+
+    btn.textContent =
+      currentVideo.muted
+        ? "🔇"
+        : "🔊";
+  }
+
+}
+
+
+/* =====================================================
+   GO LIVE
+   ===================================================== */
+
+function goLive() {
+
+  if (
+    !currentVideo
+  ) return;
+
+
+  try {
+
+    if (
+      hlsInstance &&
+      hlsInstance.liveSyncPosition
+    ) {
+
+      currentVideo.currentTime =
+        hlsInstance.liveSyncPosition - 2;
+
+    }
+
+    else if (
+      currentVideo.seekable.length
+    ) {
+
+      currentVideo.currentTime =
+        currentVideo.seekable.end(
+          currentVideo.seekable.length - 1
+        ) - 2;
+
+    }
+
+  } catch (e) {}
+
+
+  currentVideo
+    .play()
+    .catch(
+      () => {}
+    );
+
+}
+
+
+/* =====================================================
+   FULLSCREEN
+   ===================================================== */
+
+async function requestFullscreenAndLandscape() {
+
+  const container =
+    document.getElementById(
+      "playerContainer"
+    );
+
+
+  if (!container) return;
+
+
+  try {
+
+    if (
+      !document.fullscreenElement
+    ) {
 
       if (
         container.requestFullscreen
       ) {
 
-        container.requestFullscreen();
-
-      }
-
-      else if (
-        element.webkitEnterFullscreen
-      ) {
-
-        element.webkitEnterFullscreen();
-
-      }
-
-      else if (
-        element.webkitRequestFullscreen
-      ) {
-
-        element.webkitRequestFullscreen();
+        await container.requestFullscreen();
 
       }
 
@@ -870,959 +3307,286 @@
 
     }
 
-
-    // ==================================================
-    // PLAYER UI
-    // ==================================================
-
-    function createPlayerUI() {
-
-      const playerContainer =
-        document.getElementById(
-          "playerContainer"
-        );
+  } catch (e) {}
 
 
-      playerContainer.innerHTML = `
+  /*
+     محاولة تثبيت الوضع الأفقي
+  */
 
-        <video
-          id="videoPlayer"
-          controls
-          playsinline
-          webkit-playsinline
-          preload="auto"
-          x-webkit-airplay="allow"
-        ></video>
+  try {
 
-
-        <div
-          id="playerLoading"
-          class="player-loading"
-        >
-
-          <div
-            class="loading-spinner"
-          ></div>
-
-          <div
-            class="loading-text"
-          >
-            جاري تحميل البث...
-          </div>
-
-        </div>
-
-
-        <div
-          id="liveStatusBar"
-        >
-
-          <div
-            class="live-status-top"
-          >
-
-            <div
-              class="live-indicator"
-            >
-
-              <span
-                class="live-dot"
-              ></span>
-
-              <span>
-                LIVE
-              </span>
-
-            </div>
-
-
-            <span
-              id="bufferText"
-            >
-              Buffer: 0s
-            </span>
-
-          </div>
-
-
-          <div
-            class="buffer-track"
-          >
-
-            <div
-              id="bufferProgress"
-            ></div>
-
-          </div>
-
-        </div>
-      `;
-    }
-
-
-    // ==================================================
-    // LOADING
-    // ==================================================
-
-    function setLoading(
-      status
+    if (
+      screen.orientation &&
+      screen.orientation.lock
     ) {
 
-      const loading =
-        document.getElementById(
-          "playerLoading"
-        );
-
-      if (!loading) return;
-
-
-      if (status) {
-
-        loading.classList.add(
-          "visible"
-        );
-
-      } else {
-
-        loading.classList.remove(
-          "visible"
-        );
-
-      }
-
-    }
-
-
-    // ==================================================
-    // BUFFER MONITOR
-    // ==================================================
-
-    function startBufferMonitor(
-      video
-    ) {
-
-      if (bufferTimer) {
-
-        clearInterval(
-          bufferTimer
-        );
-
-      }
-
-
-      const statusBar =
-        document.getElementById(
-          "liveStatusBar"
-        );
-
-
-      const progress =
-        document.getElementById(
-          "bufferProgress"
-        );
-
-
-      const bufferText =
-        document.getElementById(
-          "bufferText"
-        );
-
-
-      if (!statusBar ||
-          !progress ||
-          !bufferText) {
-        return;
-      }
-
-
-      statusBar.classList.add(
-        "visible"
+      await screen.orientation.lock(
+        "landscape"
       );
 
-
-      bufferTimer =
-        setInterval(
-          function() {
-
-            if (
-              !video ||
-              video.readyState < 2
-            ) {
-              return;
-            }
-
-
-            let bufferedSeconds = 0;
-
-
-            try {
-
-              const currentTime =
-                video.currentTime;
-
-
-              const ranges =
-                video.buffered;
-
-
-              for (
-                let i = 0;
-                i < ranges.length;
-                i++
-              ) {
-
-                const start =
-                  ranges.start(i);
-
-                const end =
-                  ranges.end(i);
-
-
-                if (
-                  currentTime >= start &&
-                  currentTime <= end
-                ) {
-
-                  bufferedSeconds =
-                    Math.max(
-                      0,
-                      end - currentTime
-                    );
-
-                  break;
-                }
-
-              }
-
-            } catch (e) {}
-
-
-            const displaySeconds =
-              Math.round(
-                bufferedSeconds
-              );
-
-
-            bufferText.textContent =
-              `Buffer: ${displaySeconds}s`;
-
-
-            /*
-             * عرض بصري من 0 إلى 30 ثانية.
-             * لا يؤثر على البث نفسه.
-             */
-
-            const percent =
-              Math.min(
-                100,
-                (bufferedSeconds / 30) * 100
-              );
-
-
-            progress.style.width =
-              percent + "%";
-
-
-            if (
-              bufferedSeconds < 3
-            ) {
-
-              progress.style.background =
-                "#ef4444";
-
-            }
-
-            else if (
-              bufferedSeconds < 8
-            ) {
-
-              progress.style.background =
-                "#f59e0b";
-
-            }
-
-            else {
-
-              progress.style.background =
-                "#38bdf8";
-
-            }
-
-          },
-          500
-        );
     }
 
+  } catch (e) {}
 
-    // ==================================================
-    // PLAY CHANNEL
-    // ==================================================
+}
 
-    function playChannel(
-      id,
-      m3u8Url,
-      name
+
+/* =====================================================
+   MANUAL FULLSCREEN
+   ===================================================== */
+
+function toggleFullscreen() {
+
+  const container =
+    document.getElementById(
+      "playerContainer"
+    );
+
+
+  if (!container) return;
+
+
+  if (
+    document.fullscreenElement
+  ) {
+
+    if (
+      document.exitFullscreen
     ) {
 
-      const originalUrl =
-        m3u8Url;
-
-
-      const channelLabel =
-        document.getElementById(
-          "currentChannelLabel"
-        );
-
-
-      if (
-        !originalUrl ||
-        originalUrl === ''
-      ) {
-
-        alert(
-          'لا يوجد رابط بث لهذه القناة حالياً.'
-        );
-
-        return;
-
-      }
-
-
-      // ================================================
-      // CLEAN OLD PLAYER
-      // ================================================
-
-      destroyPlayer();
-
-
-      // ================================================
-      // CREATE NEW PLAYER
-      // ================================================
-
-      createPlayerUI();
-
-
-      const videoElement =
-        document.getElementById(
-          "videoPlayer"
-        );
-
-
-      if (!videoElement) {
-        return;
-      }
-
-
-      setLoading(true);
-
-
-      // ================================================
-      // HLS.JS
-      // ================================================
-
-      if (
-        Hls.isSupported()
-      ) {
-
-        hlsInstance =
-          new Hls({
-
-            debug: false,
-
-
-            /*
-             * ==========================================
-             * BUFFER
-             * ==========================================
-             *
-             * نستخدم Buffer أكبر للبث المباشر
-             * لتقليل التقطيع عند ضعف الشبكة.
-             */
-
-            maxBufferLength: 30,
-
-            maxMaxBufferLength: 45,
-
-            backBufferLength: 30,
-
-
-            /*
-             * ==========================================
-             * LIVE
-             * ==========================================
-             */
-
-            lowLatencyMode: false,
-
-            liveSyncDurationCount: 4,
-
-            liveMaxLatencyDurationCount: 10,
-
-            maxLiveSyncPlaybackRate: 1.05,
-
-
-            /*
-             * ==========================================
-             * FRAGMENT
-             * ==========================================
-             */
-
-            maxFragLookUpTolerance: 0.25,
-
-            maxLoadingDelay: 4,
-
-
-            /*
-             * ==========================================
-             * BANDWIDTH / ABR
-             * ==========================================
-             */
-
-            abrEwmaFastLive: 3,
-
-            abrEwmaSlowLive: 9,
-
-            abrBandWidthFactor: 0.75,
-
-            abrBandWidthUpFactor: 0.70,
-
-
-            /*
-             * ==========================================
-             * RETRY
-             * ==========================================
-             *
-             * إعادة المحاولة فقط عند الحاجة.
-             */
-
-            manifestLoadingMaxRetry: 4,
-
-            levelLoadingMaxRetry: 4,
-
-            fragLoadingMaxRetry: 4,
-
-            manifestLoadingRetryDelay: 1000,
-
-            levelLoadingRetryDelay: 1000,
-
-            fragLoadingRetryDelay: 1000,
-
-
-            /*
-             * ==========================================
-             * PERFORMANCE
-             * ==========================================
-             */
-
-            enableWorker: true,
-
-            capLevelToPlayerSize: true,
-
-            startLevel: -1
-
-          });
-
-
-        // ==============================================
-        // LOAD
-        // ==============================================
-
-        hlsInstance.loadSource(
-          originalUrl
-        );
-
-
-        hlsInstance.attachMedia(
-          videoElement
-        );
-
-
-        // ==============================================
-        // MANIFEST
-        // ==============================================
-
-        hlsInstance.on(
-          Hls.Events.MANIFEST_PARSED,
-          function() {
-
-            setLoading(false);
-
-
-            startBufferMonitor(
-              videoElement
-            );
-
-
-            videoElement
-              .play()
-              .then(() => {
-
-                /*
-                 * محاولة Fullscreen
-                 * كما في الكود الأصلي.
-                 */
-
-                try {
-
-                  requestFullscreen(
-                    videoElement
-                  );
-
-                } catch (e) {}
-
-              })
-              .catch(
-                function(error) {
-
-                  console.log(
-                    'تم منع التشغيل التلقائي:',
-                    error
-                  );
-
-                }
-              );
-
-          }
-        );
-
-
-        // ==============================================
-        // BUFFER APPENDED
-        // ==============================================
-
-        hlsInstance.on(
-          Hls.Events.BUFFER_APPENDED,
-          function() {
-
-            if (
-              videoElement.readyState >= 3
-            ) {
-
-              setLoading(false);
-
-            }
-
-          }
-        );
-
-
-        // ==============================================
-        // FRAG LOADED
-        // ==============================================
-
-        hlsInstance.on(
-          Hls.Events.FRAG_LOADED,
-          function() {
-
-            setLoading(false);
-
-          }
-        );
-
-
-        // ==============================================
-        // ERROR HANDLER
-        // ==============================================
-
-        hlsInstance.on(
-          Hls.Events.ERROR,
-          function(
-            event,
-            data
-          ) {
-
-            console.log(
-              "HLS:",
-              data.type,
-              data.details,
-              "fatal:",
-              data.fatal
-            );
-
-
-            // ------------------------------------------
-            // NETWORK
-            // ------------------------------------------
-
-            if (
-              data.fatal &&
-              data.type ===
-              Hls.ErrorTypes.NETWORK_ERROR
-            ) {
-
-              console.log(
-                "Network error - إعادة تحميل HLS"
-              );
-
-
-              setLoading(true);
-
-
-              /*
-               * لا ندمر المشغل.
-               * فقط نوقف التحميل لحظيًا ثم نعيده.
-               */
-
-              setTimeout(
-                function() {
-
-                  if (
-                    hlsInstance
-                  ) {
-
-                    hlsInstance.startLoad();
-
-                  }
-
-                },
-                800
-              );
-
-
-              return;
-            }
-
-
-            // ------------------------------------------
-            // MEDIA
-            // ------------------------------------------
-
-            if (
-              data.fatal &&
-              data.type ===
-              Hls.ErrorTypes.MEDIA_ERROR
-            ) {
-
-              console.log(
-                "Media error - recovery"
-              );
-
-
-              try {
-
-                hlsInstance.recoverMediaError();
-
-              } catch (e) {
-
-                console.log(
-                  e
-                );
-
-              }
-
-
-              return;
-            }
-
-
-            // ------------------------------------------
-            // OTHER FATAL ERROR
-            // ------------------------------------------
-
-            if (
-              data.fatal
-            ) {
-
-              console.log(
-                "Fatal HLS error"
-              );
-
-
-              setLoading(true);
-
-
-              setTimeout(
-                function() {
-
-                  if (
-                    hlsInstance
-                  ) {
-
-                    try {
-
-                      hlsInstance.destroy();
-
-                    } catch (e) {}
-
-
-                    hlsInstance = null;
-
-
-                    /*
-                     * إعادة تشغيل القناة
-                     * مرة واحدة من خلال نفس الرابط.
-                     */
-
-                    playChannel(
-                      id,
-                      originalUrl,
-                      name
-                    );
-
-                  }
-
-                },
-                1500
-              );
-
-            }
-
-          }
-        );
-
-
-        // ==============================================
-        // STALLED
-        // ==============================================
-
-        videoElement.addEventListener(
-          "stalled",
-          function() {
-
-            setLoading(true);
-
-          }
-        );
-
-
-        // ==============================================
-        // WAITING
-        // ==============================================
-
-        videoElement.addEventListener(
-          "waiting",
-          function() {
-
-            setLoading(true);
-
-          }
-        );
-
-
-        // ==============================================
-        // PLAYING
-        // ==============================================
-
-        videoElement.addEventListener(
-          "playing",
-          function() {
-
-            setLoading(false);
-
-          }
-        );
-
-
-        // ==============================================
-        // CAN PLAY
-        // ==============================================
-
-        videoElement.addEventListener(
-          "canplay",
-          function() {
-
-            setLoading(false);
-
-          }
-        );
-
-
-      }
-
-
-      // ================================================
-      // SAFARI / IOS
-      // ================================================
-
-      else if (
-        videoElement.canPlayType(
-          'application/vnd.apple.mpegurl'
-        )
-      ) {
-
-        videoElement.src =
-          originalUrl;
-
-
-        videoElement.addEventListener(
-          'loadedmetadata',
-          function() {
-
-            setLoading(false);
-
-
-            startBufferMonitor(
-              videoElement
-            );
-
-
-            videoElement
-              .play()
-              .then(() => {
-
-                try {
-
-                  requestFullscreen(
-                    videoElement
-                  );
-
-                } catch (e) {}
-
-              })
-              .catch(
-                function(error) {
-
-                  console.log(
-                    'تم منع التشغيل التلقائي:',
-                    error
-                  );
-
-                }
-              );
-
-          }
-        );
-
-
-        videoElement.addEventListener(
-          "waiting",
-          function() {
-
-            setLoading(true);
-
-          }
-        );
-
-
-        videoElement.addEventListener(
-          "playing",
-          function() {
-
-            setLoading(false);
-
-          }
-        );
-
-      }
-
-
-      else {
-
-        setLoading(false);
-
-        alert(
-          "هذا المتصفح لا يدعم تشغيل HLS."
-        );
-
-        return;
-
-      }
-
-
-      // ================================================
-      // CHANNEL LABEL
-      // ================================================
-
-      if (channelLabel) {
-
-        channelLabel.textContent =
-          name;
-
-      }
-
-
-      // ================================================
-      // ACTIVE CARD
-      // ================================================
-
-      const allChannelCards =
-        document.querySelectorAll(
-          '.channel-card-clickable'
-        );
-
-
-      allChannelCards.forEach(
-        card =>
-          card.classList.remove(
-            'channel-card-active'
-          )
-      );
-
-
-      const clickedCard =
-        Array.from(
-          allChannelCards
-        ).find(
-          card =>
-            card.dataset.id == id
-        );
-
-
-      if (clickedCard) {
-
-        clickedCard.classList.add(
-          'channel-card-active'
-        );
-
-      }
+      document.exitFullscreen();
 
     }
 
-
-    // ==================================================
-    // SHARE
-    // ==================================================
-
-    function shareSite() {
-
-      const shareData = {
-
-        title:
-          'GO TV MAX',
-
-        text:
-          'شاهد القنوات الرياضية مباشرة.',
-
-        url:
-          window.location.href
-
-      };
+    return;
+  }
 
 
-      if (
-        navigator.share
-      ) {
+  requestFullscreenAndLandscape();
 
-        navigator.share(
-          shareData
-        )
-        .catch(
-          error =>
-            console.log(
-              'Error sharing',
-              error
-            )
-        );
+}
 
-      } else {
 
-        navigator.clipboard
-          .writeText(
-            shareData.url
-          )
-          .then(
-            () => {
+/* =====================================================
+   PAGES
+   ===================================================== */
 
-              alert(
-                `تم نسخ رابط الموقع بنجاح! شاركه لتعم الفائدة: ${shareData.url}`
-              );
+function togglePages(
+  status
+) {
 
-            }
+  const loginPage =
+    document.getElementById(
+      "loginPage"
+    );
+
+
+  const content =
+    document.getElementById(
+      "channelsContent"
+    );
+
+
+  if (status) {
+
+    loginPage.classList.add(
+      "hidden"
+    );
+
+    content.classList.remove(
+      "hidden"
+    );
+
+    document.body.style.justifyContent =
+      "flex-start";
+
+  }
+
+  else {
+
+    loginPage.classList.remove(
+      "hidden"
+    );
+
+    content.classList.add(
+      "hidden"
+    );
+
+    document.body.style.justifyContent =
+      "center";
+  }
+
+}
+
+
+/* =====================================================
+   LOGIN CHECK
+   ===================================================== */
+
+function checkCode() {
+
+  const input =
+    document.getElementById(
+      "passCodeInput"
+    );
+
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
+  if (
+    input.value ===
+    CORRECT_CODE
+  ) {
+
+    isLoggedIn = true;
+
+    togglePages(true);
+
+    message.textContent = "";
+
+  }
+
+  else {
+
+    message.textContent =
+      "رمز المرور غير صحيح";
+
+    input.value = "";
+
+    input.focus();
+
+  }
+
+}
+
+
+/* =====================================================
+   SHARE
+   ===================================================== */
+
+function shareSite() {
+
+  const shareData = {
+
+    title:
+      "GO TV MAX",
+
+    text:
+      "شاهد القنوات الرياضية مباشرة.",
+
+    url:
+      window.location.href
+
+  };
+
+
+  if (
+    navigator.share
+  ) {
+
+    navigator.share(
+      shareData
+    ).catch(
+      () => {}
+    );
+
+  }
+
+  else if (
+    navigator.clipboard
+  ) {
+
+    navigator.clipboard
+      .writeText(
+        shareData.url
+      )
+      .then(
+        function() {
+
+          alert(
+            "تم نسخ رابط الموقع."
           );
 
-      }
+        }
+      );
+
+  }
+
+}
+
+
+/* =====================================================
+   FULLSCREEN CHANGE
+   ===================================================== */
+
+document.addEventListener(
+  "fullscreenchange",
+  function() {
+
+    if (
+      document.fullscreenElement
+    ) {
+
+      try {
+
+        if (
+          screen.orientation &&
+          screen.orientation.lock
+        ) {
+
+          screen.orientation.lock(
+            "landscape"
+          ).catch(
+            () => {}
+          );
+
+        }
+
+      } catch (e) {}
 
     }
 
-  </script></body>
+  }
+);
+
+
+/* =====================================================
+   PAGE LOAD
+   ===================================================== */
+
+window.addEventListener(
+  "load",
+  function() {
+
+    togglePages(true);
+
+    switchServer(
+      activeServer
+    );
+
+  }
+);
+
+
+/* =====================================================
+   CLEANUP
+   ===================================================== */
+
+window.addEventListener(
+  "beforeunload",
+  function() {
+
+    destroyPlayer();
+
+  }
+);
+
+</script>
+
+</body>
 </html>
