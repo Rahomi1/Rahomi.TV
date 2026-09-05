@@ -693,7 +693,22 @@
       if (Hls.isSupported()) {
 
         hlsInstance = new Hls({
-          debug: false
+
+          debug: false,
+
+          /*
+           * إعدادات البث المباشر
+           * تجعل HLS يحافظ على نافذة LIVE
+           * ولا يتعامل مع البث كتسجيل عادي.
+           */
+          liveSyncDurationCount: 3,
+          liveMaxLatencyDurationCount: 6,
+          maxLiveSyncPlaybackRate: 1.2,
+
+          lowLatencyMode: false,
+
+          backBufferLength: 30
+
         });
 
         hlsInstance.loadSource(originalUrl);
